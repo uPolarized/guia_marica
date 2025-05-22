@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: projeto_grafo
+    env: python
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "gunicorn guia_marica.wsgi:application"
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: guia_marica.settings
+      - key: PYTHON_VERSION
+        value: 3.11
