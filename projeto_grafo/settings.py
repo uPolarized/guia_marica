@@ -69,8 +69,9 @@ MIDDLEWARE = [
 ]
 
 # URLs e WSGI
-ROOT_URLCONF = 'projeto_grafo.urls'  # Substitua pelo nome da sua pasta do projeto
+ROOT_URLCONF = 'projeto_grafo.urls'
 WSGI_APPLICATION = 'projeto_grafo.wsgi.application'
+
 
 # Templates
 TEMPLATES = [

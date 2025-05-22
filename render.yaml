@@ -3,10 +3,10 @@ services:
     name: projeto_grafo
     env: python
     buildCommand: "pip install -r requirements.txt"
-    startCommand: "gunicorn guia_marica.wsgi:application"
+    startCommand: "gunicorn projeto_grafo.wsgi:application"
     envVars:
       - key: DJANGO_SETTINGS_MODULE
-        value: guia_marica.settings
+        value: projeto_grafo.settings
       - key: PYTHON_VERSION
         value: 3.11
       - key: DJANGO_SECRET_KEY
