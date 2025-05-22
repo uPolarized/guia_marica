@@ -1,6 +1,6 @@
 # D:\projeto-grafo\Dockerfile
 # Use uma imagem Python oficial baseada em Debian (Buster)
-FROM python:3.11-slim-buster
+FROM python:3.11-slim-bookworm
 
 # Define variáveis de ambiente para Python
 ENV PYTHONDONTWRITEBYTECODE 1
