@@ -1,0 +1,32 @@
+
+
+services:
+  web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000 # Manteremos o comando simples por enquanto
+    volumes:
+      - .:/app
+      - ./media:/app/media
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy # AGORA ESPERA ATÉ O 'db' ESTAR SAUDÁVEL
+  db:
+    image: postgres:14-alpine # Versão 14 que o Django 5.x exige
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      POSTGRES_DB: django_db
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    healthcheck: # ADICIONAMOS O HEALTHCHECK AQUI
+      test: ["CMD-SHELL", "pg_isready -U user -d django_db"] # Comando para verificar se o DB está pronto
+      interval: 5s # Intervalo entre as verificações
+      timeout: 5s # Tempo limite para cada verificação
+      retries: 5 # Quantas vezes tentar antes de falhar
+
+volumes:
+  postgres_data:

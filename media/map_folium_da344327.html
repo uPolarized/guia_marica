@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_e57c3e827324caa2b91ae035fe8821ca {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+</head>
+<body>
+    
+    
+            <div class="folium-map" id="map_e57c3e827324caa2b91ae035fe8821ca" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_e57c3e827324caa2b91ae035fe8821ca = L.map(
+                "map_e57c3e827324caa2b91ae035fe8821ca",
+                {
+                    center: [-22.91, -42.82],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 11,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_fda1a24d720765b6340e7385cd471320 = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_fda1a24d720765b6340e7385cd471320.addTo(map_e57c3e827324caa2b91ae035fe8821ca);
+        
+    
+            var marker_f50c245ed0ce53f4c88c7e7ac39b5318 = L.marker(
+                [-22.9189, -42.8186],
+                {
+}
+            ).addTo(map_e57c3e827324caa2b91ae035fe8821ca);
+        
+    
+            var icon_b3f6ab5c2c10038f2788cc06832750f9 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_7924ec847d8ffc17ea13589d4f4f9204 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_a4c6b3ae8668228fcb388f0bdb6d1139 = $(`<div id="html_a4c6b3ae8668228fcb388f0bdb6d1139" style="width: 100.0%; height: 100.0%;"><b>Lagoa de Araçatiba</b></div>`)[0];
+                popup_7924ec847d8ffc17ea13589d4f4f9204.setContent(html_a4c6b3ae8668228fcb388f0bdb6d1139);
+            
+        
+
+        marker_f50c245ed0ce53f4c88c7e7ac39b5318.bindPopup(popup_7924ec847d8ffc17ea13589d4f4f9204)
+        ;
+
+        
+    
+    
+                marker_f50c245ed0ce53f4c88c7e7ac39b5318.setIcon(icon_b3f6ab5c2c10038f2788cc06832750f9);
+            
+    
+            var marker_334d53d8ff87ea0b5927e6469a7714e2 = L.marker(
+                [-22.9667, -43.0167],
+                {
+}
+            ).addTo(map_e57c3e827324caa2b91ae035fe8821ca);
+        
+    
+            var icon_5489779d88ff4a0b681e3c571b03b29a = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_914cbd123d924572103d708ee39972f7 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_ab27e442700b052d5cfddea7acbe5a7a = $(`<div id="html_ab27e442700b052d5cfddea7acbe5a7a" style="width: 100.0%; height: 100.0%;"><b>Praia de Itaipuaçu</b></div>`)[0];
+                popup_914cbd123d924572103d708ee39972f7.setContent(html_ab27e442700b052d5cfddea7acbe5a7a);
+            
+        
+
+        marker_334d53d8ff87ea0b5927e6469a7714e2.bindPopup(popup_914cbd123d924572103d708ee39972f7)
+        ;
+
+        
+    
+    
+                marker_334d53d8ff87ea0b5927e6469a7714e2.setIcon(icon_5489779d88ff4a0b681e3c571b03b29a);
+            
+    
+            var marker_29e912d30b0f5a1e7d66f75dbd9fb95d = L.marker(
+                [-22.9619, -42.7083],
+                {
+}
+            ).addTo(map_e57c3e827324caa2b91ae035fe8821ca);
+        
+    
+            var icon_806fdf0cf79ebfc089d8503e978e600b = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_c294db9289cbb4fe973d54cadaf17e91 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_d2affd808d2d73d30c94b59eecbab821 = $(`<div id="html_d2affd808d2d73d30c94b59eecbab821" style="width: 100.0%; height: 100.0%;"><b>Farol de Ponta Negra</b></div>`)[0];
+                popup_c294db9289cbb4fe973d54cadaf17e91.setContent(html_d2affd808d2d73d30c94b59eecbab821);
+            
+        
+
+        marker_29e912d30b0f5a1e7d66f75dbd9fb95d.bindPopup(popup_c294db9289cbb4fe973d54cadaf17e91)
+        ;
+
+        
+    
+    
+                marker_29e912d30b0f5a1e7d66f75dbd9fb95d.setIcon(icon_806fdf0cf79ebfc089d8503e978e600b);
+            
+    
+            var marker_172036a1434a425b4c8ffb19e6c22bac = L.marker(
+                [-22.9217, -42.8217],
+                {
+}
+            ).addTo(map_e57c3e827324caa2b91ae035fe8821ca);
+        
+    
+            var icon_e67435a14060cc913217ced29a552efd = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_fb871f770f5d1bf0e7231f9c3178e0b8 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_80276b65fb9edbbc0fc306c66a57cf80 = $(`<div id="html_80276b65fb9edbbc0fc306c66a57cf80" style="width: 100.0%; height: 100.0%;"><b>Centro de Maricá</b></div>`)[0];
+                popup_fb871f770f5d1bf0e7231f9c3178e0b8.setContent(html_80276b65fb9edbbc0fc306c66a57cf80);
+            
+        
+
+        marker_172036a1434a425b4c8ffb19e6c22bac.bindPopup(popup_fb871f770f5d1bf0e7231f9c3178e0b8)
+        ;
+
+        
+    
+    
+                marker_172036a1434a425b4c8ffb19e6c22bac.setIcon(icon_e67435a14060cc913217ced29a552efd);
+            
+    
+            var marker_8900b7526a81ebd3ef37ae1e152e3659 = L.marker(
+                [-22.95, -42.93],
+                {
+}
+            ).addTo(map_e57c3e827324caa2b91ae035fe8821ca);
+        
+    
+            var icon_9ffb90bdba62a113994b9e517b200130 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_ff731fd25b0fc4f19b78047955d0a064 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_b915e8c8c1ef5500a947c7a8bb341004 = $(`<div id="html_b915e8c8c1ef5500a947c7a8bb341004" style="width: 100.0%; height: 100.0%;"><b>Pedra do Elefante</b></div>`)[0];
+                popup_ff731fd25b0fc4f19b78047955d0a064.setContent(html_b915e8c8c1ef5500a947c7a8bb341004);
+            
+        
+
+        marker_8900b7526a81ebd3ef37ae1e152e3659.bindPopup(popup_ff731fd25b0fc4f19b78047955d0a064)
+        ;
+
+        
+    
+    
+                marker_8900b7526a81ebd3ef37ae1e152e3659.setIcon(icon_9ffb90bdba62a113994b9e517b200130);
+            
+    
+            var marker_ffc3281cfee54f1933ff666ac9b26133 = L.marker(
+                [-22.94, -42.86],
+                {
+}
+            ).addTo(map_e57c3e827324caa2b91ae035fe8821ca);
+        
+    
+            var icon_56fcd77eb5fe465e6f3ce1fc6c25aea9 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_f4a0b1ee7cbd00038bc62dfbddc7022c = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_97f351fd786ca902d8291cfe7e01509d = $(`<div id="html_97f351fd786ca902d8291cfe7e01509d" style="width: 100.0%; height: 100.0%;"><b>Cachoeira do Espraiado</b></div>`)[0];
+                popup_f4a0b1ee7cbd00038bc62dfbddc7022c.setContent(html_97f351fd786ca902d8291cfe7e01509d);
+            
+        
+
+        marker_ffc3281cfee54f1933ff666ac9b26133.bindPopup(popup_f4a0b1ee7cbd00038bc62dfbddc7022c)
+        ;
+
+        
+    
+    
+                marker_ffc3281cfee54f1933ff666ac9b26133.setIcon(icon_56fcd77eb5fe465e6f3ce1fc6c25aea9);
+            
+    
+            var marker_80c1c3dce2e5b67cd769420415b3125e = L.marker(
+                [-22.9742, -42.7028],
+                {
+}
+            ).addTo(map_e57c3e827324caa2b91ae035fe8821ca);
+        
+    
+            var icon_90fee26b6ce6676587d8bf680b0e43b4 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_6791e66a48794e32a4dab9ec4bea726b = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_e18bf86c65e8a52796c793ed0a7be4fd = $(`<div id="html_e18bf86c65e8a52796c793ed0a7be4fd" style="width: 100.0%; height: 100.0%;"><b>Mirante da Ponta Negra</b></div>`)[0];
+                popup_6791e66a48794e32a4dab9ec4bea726b.setContent(html_e18bf86c65e8a52796c793ed0a7be4fd);
+            
+        
+
+        marker_80c1c3dce2e5b67cd769420415b3125e.bindPopup(popup_6791e66a48794e32a4dab9ec4bea726b)
+        ;
+
+        
+    
+    
+                marker_80c1c3dce2e5b67cd769420415b3125e.setIcon(icon_90fee26b6ce6676587d8bf680b0e43b4);
+            
+    
+            var marker_c334fffbc677dbee85d97e93bd20c4c8 = L.marker(
+                [-22.92717211701768, -42.91139602661133],
+                {
+}
+            ).addTo(map_e57c3e827324caa2b91ae035fe8821ca);
+        
+    
+            var icon_f591525dfaf31f2c9337bc5a0444c9b9 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_e52229d2b26e1226623238790de0fb35 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_6b40e6e8a4f440a46f0e7595f4b6750b = $(`<div id="html_6b40e6e8a4f440a46f0e7595f4b6750b" style="width: 100.0%; height: 100.0%;"><b>Pedra de Inoã</b></div>`)[0];
+                popup_e52229d2b26e1226623238790de0fb35.setContent(html_6b40e6e8a4f440a46f0e7595f4b6750b);
+            
+        
+
+        marker_c334fffbc677dbee85d97e93bd20c4c8.bindPopup(popup_e52229d2b26e1226623238790de0fb35)
+        ;
+
+        
+    
+    
+                marker_c334fffbc677dbee85d97e93bd20c4c8.setIcon(icon_f591525dfaf31f2c9337bc5a0444c9b9);
+            
+    
+            var poly_line_81ecca80968a200794f431442ab6c714 = L.polyline(
+                [[-22.9742, -42.7028], [-22.9619, -42.7083], [-22.9217, -42.8217]],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "red", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.7, "smoothFactor": 1.0, "stroke": true, "weight": 5}
+            ).addTo(map_e57c3e827324caa2b91ae035fe8821ca);
+        
+    
+            poly_line_81ecca80968a200794f431442ab6c714.bindTooltip(
+                `<div>
+                     Caminho: Mirante da Ponta Negra para Centro de Maricá - Custo: 33
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var layer_control_16d1cc11bad600ea7a30b9c05dc3f518_layers = {
+                base_layers : {
+                    "openstreetmap" : tile_layer_fda1a24d720765b6340e7385cd471320,
+                },
+                overlays :  {
+                },
+            };
+            let layer_control_16d1cc11bad600ea7a30b9c05dc3f518 = L.control.layers(
+                layer_control_16d1cc11bad600ea7a30b9c05dc3f518_layers.base_layers,
+                layer_control_16d1cc11bad600ea7a30b9c05dc3f518_layers.overlays,
+                {
+  "position": "topright",
+  "collapsed": true,
+  "autoZIndex": true,
+}
+            ).addTo(map_e57c3e827324caa2b91ae035fe8821ca);
+
+        
+</script>
+</html>

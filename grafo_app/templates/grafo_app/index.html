@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guia Turístico Inteligente de Maricá</title> {# Considere usar um dos títulos criativos que discutimos #}
+    {% load static %}
+    <link 
+      rel="stylesheet" 
+      href="{% static 'grafo_app/css/style.css' %}?v=2.0.5"  {# Incremente a versão se alterar o style.css #}
+    >
+    <link 
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" 
+      rel="stylesheet"
+    >
+    <link 
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" 
+      rel="stylesheet"
+    >
+    {# Link para a biblioteca tsParticles (se for usar o efeito de bolhas) #}
+    <script src="https://cdn.jsdelivr.net/npm/tsparticles@2.12.0/tsparticles.bundle.min.js"></script>
+</head>
+<body>
+    <div id="tsparticles-background"></div>
+
+    <div class="hero-section">
+        <h1>Guia Turístico Inteligente de Maricá</h1>
+        <p class="subtitle">Descubra os melhores caminhos pelas belezas naturais!</p>
+    </div>
+
+    <div class="container">
+        <div class="form-section">
+            <form method="POST" action="{% url 'home' %}">
+                {% csrf_token %}
+                <div class="input-group">
+                    <label for="origem">Origem</label>
+                    <select name="origem_selecionada" id="origem"> 
+                        <option value="" {% if not selected_origem %}selected{% endif %} disabled>Selecione a Origem</option>
+                        {% for ponto in pontos_disponiveis %}
+                            <option 
+                              value="{{ ponto }}" 
+                              {% if ponto == selected_origem %}selected{% endif %}
+                            >
+                                {{ ponto }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="destino">Destino</label>
+                    <select name="destino_selecionado" id="destino">
+                        <option value="" {% if not selected_destino %}selected{% endif %} disabled>Selecione o Destino</option>
+                        {% for ponto in pontos_disponiveis %}
+                            <option 
+                              value="{{ ponto }}" 
+                              {% if ponto == selected_destino %}selected{% endif %}
+                            >
+                                {{ ponto }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                {# ***** NOVO CAMPO PARA CONDIÇÃO DO TRÂNSITO ***** #}
+                <div class="input-group">
+                    <label for="traffic_condition">Condição do Trânsito</label>
+                    <select name="traffic_condition" id="traffic_condition">
+                        <option value="livre" {% if selected_traffic_condition == "livre" %}selected{% endif %}>Trânsito Livre (Ideal)</option>
+                        <option value="moderado" {% if selected_traffic_condition == "moderado" %}selected{% endif %}>Trânsito Moderado</option>
+                        <option value="intenso" {% if selected_traffic_condition == "intenso" %}selected{% endif %}>Trânsito Intenso</option>
+                    </select>
+                </div>
+                {# ***** FIM DO NOVO CAMPO ***** #}
+
+                <button type="submit" class="cta-button">Calcular Caminho</button>
+            </form>
+            <p style="text-align: center; margin-top: 15px;">
+                <a href="{% url 'home' %}" class="reset-button">Limpar Seleção e Rota</a>
+            </p>
+        </div>
+
+        <div class="results-area">
+            <p class="route-summary">
+                <strong>
+                    {% if show_map_section and folium_map_html %}
+                        {{ caminho }}
+                    {% elif caminho %}
+                        <span class="{% if 'Erro' in caminho or 'Não foi possível' in caminho or 'Falha' in caminho %}error-message{% else %}no-results{% endif %}">{{ caminho }}</span>
+                    {% else %}
+                        <span class="no-results">Selecione os pontos de origem e destino para calcular o caminho.</span>
+                    {% endif %}
+                </strong>
+            </p>
+            {% if show_map_section and folium_map_html and custo and custo != "" %} 
+                <p class="cost-summary"><strong>Custo Total Estimado:</strong> {{ custo }}</p>
+            {% endif %}
+            {% if DIAGNOSTIC_MODE %}
+                <p style="font-size: 0.8em; color: #aaa; text-align:center; margin-top:10px;">(Modo Diagnóstico Ativo: Rota por '{{ current_weight }}')</p>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="map-section" id="map-section" style="display: none;">
+        {% if folium_map_html %} 
+            <h2 class="map-title">Visualização da Rota no Mapa</h2>
+            <div class="folium-map-container">
+                {{ folium_map_html|safe }}
+            </div>
+        {% endif %}
+    </div>
+
+    {{ show_map_section|json_script:"show_map_data_id" }}
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Lógica para mostrar/esconder a seção do mapa
+        const mapSection = document.getElementById('map-section');
+        const showMapDataElement = document.getElementById('show_map_data_id');
+        let shouldShowMap = false;
+        
+        if (showMapDataElement) {
+            try {
+                shouldShowMap = JSON.parse(showMapDataElement.textContent);
+            } catch (e) {
+                console.error("Erro ao parsear show_map_data_id:", e);
+            }
+        }
+
+        if (shouldShowMap) {
+            mapSection.style.display = 'block'; 
+            void mapSection.offsetWidth; 
+            mapSection.classList.add('visible');
+            
+            setTimeout(() => {
+                mapSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 150); 
+        } else {
+            mapSection.style.display = 'none';
+            mapSection.classList.remove('visible');
+        }
+
+        // Inicialização do tsParticles para o efeito de bolhas
+        if (window.tsParticles) {
+            tsParticles.load("tsparticles-background", {
+                // Esta é uma configuração de exemplo. Consulte a documentação do tsParticles para mais opções.
+                // Você pode também usar presets como "bubbles", "snow", "stars", etc.
+                // preset: "bubbles", 
+                fullScreen: { // Garante que cubra toda a tela do body, respeitando o z-index
+                    enable: true,
+                    zIndex: -1 // Mantém atrás do conteúdo principal (combinado com o CSS)
+                },
+                particles: {
+                    number: {
+                        value: 30, 
+                        density: {
+                            enable: true,
+                            area: 800 // Alterado de value_area para area (nova sintaxe tsParticles)
+                        }
+                    },
+                    color: {
+                        value: "rgba(0, 188, 212, 0.25)" // Cor das bolhas (seu --neon-blue com transparência)
+                    },
+                    shape: {
+                        type: "circle" 
+                    },
+                    opacity: {
+                        value: {min: 0.1, max: 0.4}, 
+                        animation: { 
+                            enable: true,
+                            speed: 0.8,
+                            minimumValue: 0.05, 
+                            sync: false
+                        }
+                    },
+                    size: {
+                        value: {min: 5, max: 20}, 
+                        animation: { 
+                            enable: true,
+                            speed: 4,
+                            minimumValue: 3, 
+                            sync: false
+                        }
+                    },
+                    links: { 
+                        enable: false,
+                    },
+                    move: {
+                        enable: true,
+                        speed: 1.2, 
+                        direction: "top", 
+                        random: true, 
+                        straight: false, 
+                        outModes: { 
+                            default: "out" 
+                        },
+                        attract: { 
+                            enable: false
+                        }
+                    }
+                },
+                interactivity: { 
+                    detectsOn: "canvas", // Alterado de detect_on
+                    events: {
+                        onHover: { // Alterado de onhover
+                            enable: false,
+                        },
+                        onClick: { // Alterado de onclick
+                            enable: false,
+                        },
+                        resize: { enable: true } 
+                    }
+                },
+                detectRetina: true,
+                // background: { // Removido, pois o canvas das partículas deve ser transparente por padrão
+                //    color: "transparent" 
+                // }
+            });
+        } else {
+            console.warn("Biblioteca tsParticles não carregada. Efeito de bolhas não será iniciado.");
+        }
+    });
+    </script>
+</body>
+</html>

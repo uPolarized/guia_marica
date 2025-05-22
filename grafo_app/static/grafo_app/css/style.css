@@ -1,0 +1,432 @@
+/* D:\projeto-grafo\grafo_app\static\grafo_app\css\style.css */
+
+/* --- :root - Variáveis Globais do Tema "Maricá Natural & Clean" --- */
+:root {
+    /* Cores */
+    --color-background: #f4f7f6; /* Fundo principal da página (cinza muito claro) */
+    --color-surface: #ffffff;    /* Fundo de cards, containers (branco) */
+    --color-primary: #4A90E2;   /* Azul suave para acentos e botões */
+    --color-primary-dark: #3a7bc8; /* Azul mais escuro para hover */
+    --color-secondary: #8DBF4C; /* Verde sálvia para outros destaques */
+    --color-text-main: #333333;    /* Texto principal (cinza escuro) */
+    --color-text-light: #5f6368; /* Texto secundário/labels (cinza médio) */
+    --color-border: #dee2e6;   /* Bordas suaves */
+    --color-error: #d9534f;     /* Vermelho para mensagens de erro */
+    --color-success: #5cb85c;   /* Verde para sucesso (pode ser o --color-secondary) */
+    --color-shadow: rgba(0, 0, 0, 0.1); /* Sombra suave */
+
+    /* Tipografia */
+    --font-heading: 'Poppins', sans-serif;
+    --font-body: 'Montserrat', sans-serif;
+    --font-size-base: 16px;
+    --line-height-base: 1.6;
+
+    /* Espaçamento e Bordas */
+    --spacing-xs: 0.25rem; /* 4px */
+    --spacing-sm: 0.5rem;  /* 8px */
+    --spacing-md: 1rem;    /* 16px */
+    --spacing-lg: 1.5rem;  /* 24px */
+    --spacing-xl: 2rem;    /* 32px */
+    --border-radius: 8px;
+    --transition-duration: 0.3s;
+}
+
+/* --- Reset Básico e Estilos Globais --- */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    font-size: var(--font-size-base);
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: var(--font-body);
+    line-height: var(--line-height-base);
+    color: var(--color-text-main);
+    background-color: var(--color-background); /* Cor de fallback */
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: var(--spacing-xl) var(--spacing-md);
+    position: relative; /* Para z-index dos pseudo-elementos e partículas */
+    overflow-x: hidden;
+    animation: fadeInBody 1s ease-out forwards;
+}
+
+@keyframes fadeInBody {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+/* --- Imagem de Fundo Borrada e Partículas --- */
+body::before { /* Imagem de fundo borrada */
+    content: "";
+    position: fixed;
+    left: 0; top: 0;
+    width: 100vw; height: 100vh;
+    z-index: -2;
+    background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRqRhmAgH03Py3PCqeE1DeesxWvusrFb92KHA&s'); /* SUBSTITUA PELA SUA IMAGEM */
+    background-size: cover;
+    background-position: center center;
+    background-attachment: fixed;
+    filter: blur(10px) brightness(0.9); /* Aumentei um pouco o blur e adicionei brilho */
+    opacity: 0.8; /* Suaviza ainda mais a imagem */
+}
+
+#tsparticles-background { /* Container das partículas JS */
+    position: fixed;
+    width: 100%; height: 100%;
+    top: 0; left: 0;
+    z-index: -1; 
+}
+
+/* Camadas de conteúdo principal sobre o fundo e partículas */
+.hero-section,
+.container,
+.map-section {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+}
+
+/* --- Tipografia --- */
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    line-height: 1.3;
+    margin-bottom: var(--spacing-md);
+    color: var(--color-text-main);
+}
+
+h1 {
+    font-size: 2.8rem; /* ~45px */
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: var(--spacing-sm);
+}
+
+h2 {
+    font-size: 1.75rem; /* ~28px */
+    text-align: center;
+    margin-bottom: var(--spacing-lg);
+    color: var(--color-primary);
+}
+
+p {
+    margin-bottom: var(--spacing-md);
+    color: var(--color-text-light);
+}
+
+strong {
+    font-weight: 600;
+    color: var(--color-text-main);
+}
+
+a {
+    color: var(--color-primary);
+    text-decoration: none;
+    transition: color var(--transition-duration) ease;
+}
+a:hover, a:focus {
+    color: var(--color-primary-dark);
+    text-decoration: underline;
+}
+
+/* --- Seção Hero --- */
+
+.hero-section {
+    /* Propriedades de layout e empilhamento (do estilo completo anterior) */
+    width: 60%; /* Ocupa a largura disponível, respeitando o padding do body */
+    position: relative; 
+    z-index: 1; /* Para ficar sobre o fundo borrado e partículas */
+    box-sizing: border-box;
+
+    /* Estilos visuais do seu tema (mantidos) */
+    text-align: center;
+    background-color: rgba(255, 255, 255, 0.5); /* Fundo branco semi-transparente sobre o blur */
+    border-radius: var(--border-radius);
+    box-shadow: 0 4px 15px var(--color-shadow);
+    backdrop-filter: blur(3px); /* Vidro fosco sutil */
+
+    /* ***** INÍCIO DAS MUDANÇAS PARA DIMINUIR O TAMANHO ***** */
+    padding: var(--spacing-md) var(--spacing-sm); /* Reduzido: Ex: de (24px 16px) para (16px 8px) */
+    margin-bottom: var(--spacing-lg);            /* Reduzido: Ex: de 32px para 24px */
+    /* ***** FIM DAS MUDANÇAS PARA DIMINUIR O TAMANHO ***** */
+}
+
+/* --- Container Principal (Formulário e Resultados) --- */
+.container {
+    background-color: var(--color-surface);
+    padding: var(--spacing-xl);
+    border-radius: var(--border-radius);
+    box-shadow: 0 4px 25px var(--color-shadow);
+    max-width: 700px; /* Container mais compacto */
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: var(--spacing-xl);
+}
+
+/* --- Seção do Formulário --- */
+.form-section {
+    display: flex;
+    flex-direction: column; /* Empilha os grupos de input */
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-xl);
+}
+.form-section form {
+    display: contents; /* Para que os filhos do form participem do flex do pai .form-section */
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.input-group label {
+    font-weight: 500;
+    font-size: 0.9rem;
+    color: var(--color-text-light);
+}
+
+.form-section select,
+.form-section input[type="text"] /* Se houver outros inputs */ {
+    width: 100%;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius);
+    background-color: var(--color-background); /* Fundo sutilmente diferente da superfície */
+    color: var(--color-text-main);
+    font-size: 1rem;
+    transition: border-color var(--transition-duration) ease, box-shadow var(--transition-duration) ease;
+    appearance: none; /* Remove aparência padrão do SO */
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="%235f6368" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/></svg>'); /* Seta customizada (cinza) */
+    background-repeat: no-repeat;
+    background-position: right var(--spacing-md) center;
+    background-size: 1em;
+    padding-right: calc(var(--spacing-md) * 2 + 1em); /* Espaço para a seta */
+}
+
+.form-section select:hover {
+    border-color: var(--color-primary);
+}
+
+.form-section select:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(var(--color-primary), 0.25); /* Glow suave no foco */
+    outline: none;
+    background-color: var(--color-surface);
+}
+
+.cta-button, .reset-button {
+    padding: var(--spacing-md) var(--spacing-lg);
+    font-size: 1rem;
+    font-weight: 600;
+    font-family: var(--font-heading);
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: background-color var(--transition-duration) ease, transform var(--transition-duration) ease, box-shadow var(--transition-duration) ease;
+    text-align: center;
+    border: none;
+}
+
+.cta-button {
+    background-color: var(--color-primary);
+    color: white;
+    box-shadow: 0 2px 5px rgba(var(--color-primary), 0.3);
+}
+.cta-button:hover, .cta-button:focus {
+    background-color: var(--color-primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(var(--color-primary), 0.4);
+}
+
+.reset-button {
+    background-color: transparent;
+    color: var(--color-text-light);
+    border: 1px solid var(--color-border);
+    display: inline-block; /* Para centralizar o texto dentro do link/botão */
+    width: auto;
+    align-self: center; /* Centraliza o botão de reset se o form for flex column */
+}
+.reset-button:hover, .reset-button:focus {
+    background-color: var(--color-background);
+    border-color: var(--color-text-light);
+    color: var(--color-text-main);
+}
+
+/* --- Área de Resultados --- */
+.results-area {
+    margin-top: var(--spacing-xl);
+    padding-top: var(--spacing-lg);
+    border-top: 1px solid var(--color-border);
+    text-align: center;
+}
+
+.results-area .route-summary strong,
+.results-area .no-results,
+.results-area .error-message {
+    display: block;
+    font-size: 1.1rem;
+    margin-bottom: var(--spacing-sm);
+    color: var(--color-text-main);
+}
+.results-area .route-summary strong {
+    font-weight: 600;
+}
+
+.results-area .cost-summary {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--color-secondary);
+    margin-bottom: var(--spacing-lg);
+}
+.results-area .cost-summary strong { /* Rótulo "Custo Total Estimado:" */
+    color: var(--color-text-main);
+    font-weight: 500;
+}
+
+.results-area .no-results {
+    color: var(--color-text-light);
+    font-style: italic;
+}
+.results-area .error-message {
+    color: var(--color-error);
+    font-weight: 600;
+    font-style: normal;
+}
+
+/* --- Seção do Mapa --- */
+.map-section {
+    /* Propriedades que você já tinha ou que estavam no estilo completo anterior para posicionamento e camada */
+    width: 50%; /* Ocupa a largura disponível */
+    position: relative; 
+    z-index: 1; /* Para ficar sobre o fundo borrado e partículas */
+    box-sizing: border-box; /* Importante se padding/border forem usados com width: 100% */
+    text-align: center; /* Para centralizar o .map-title e .folium-map-container se eles não tiverem width 100% */
+    
+    /* Estilos visuais do seu tema */
+    background-color: rgba(255, 255, 255, 0.5); /* Fundo branco semi-transparente sobre o blur */
+    border-radius: var(--border-radius);
+    box-shadow: 0 4px 15px var(--color-shadow);
+    backdrop-filter: blur(3px);
+
+    /* ***** INÍCIO DAS MUDANÇAS PARA DIMINUIR O TAMANHO ***** */
+    padding: var(--spacing-md); /* Reduzido de --spacing-lg (ex: de 24px para 16px) */
+    margin-top: var(--spacing-lg); /* Reduzido de --spacing-xl (ex: de 32px para 24px) */
+    /* Você pode ajustar ainda mais se desejar, ex: --spacing-sm para padding */
+    /* ***** FIM DAS MUDANÇAS PARA DIMINUIR O TAMANHO ***** */
+
+    /* Animação de aparição (mantida) */
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity var(--transition-slow) ease-out, transform var(--transition-slow) ease-out;
+    /* overflow: hidden; /* Descomente se o conteúdo vazar durante a animação */
+}
+
+.map-section.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Lembre-se que o título dentro desta seção também contribui para a altura percebida.
+   Seus estilos para .map-section .map-title já existem: */
+.map-section .map-title {
+    font-family: var(--font-heading);
+    font-size: 1.75rem; /* Ajustado no tema 'Maricá Natural & Clean' */
+    color: var(--color-primary);
+    margin-bottom: var(--spacing-md); /* Poderia reduzir de --spacing-lg para --spacing-md se o padding da seção diminuiu */
+    /* text-align: center; /* Já está no .map-section pai */
+}
+
+.folium-map-container {
+    width: 100%;
+    max-width: 900px; /* Reduzido de 1300px */
+    height: 450px;    /* Reduzido de 600px - esta é a altura do container */
+    margin: 0 auto;
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius);
+    box-shadow: 0 2px 10px var(--color-shadow);
+    overflow: hidden; /* Para conter o iframe se ele for maior */
+    position: relative; /* Para o iframe se ajustar 100% */
+}
+
+/* Estiliza o iframe gerado pelo Folium para ser responsivo DENTRO do container */
+.folium-map-container iframe {
+    width: 100%;
+    height: 100%;
+    border: none; /* Remove a borda padrão do iframe */
+}
+
+/* --- Responsividade --- */
+@media (max-width: 768px) {
+    body {
+        padding: var(--spacing-lg) var(--spacing-sm);
+    }
+    h1 { font-size: 2.2rem; }
+    .hero-section .subtitle { font-size: 1rem; }
+
+    .container {
+        padding: var(--spacing-lg);
+        max-width: 100%; /* Ocupa a largura total menos o padding do body */
+    }
+    .form-section {
+        gap: var(--spacing-md);
+    }
+    .form-section select, .cta-button, .reset-button {
+        font-size: 0.95rem;
+        padding: var(--spacing-sm) var(--spacing-md);
+    }
+
+    .results-area .route-summary strong,
+    .results-area .no-results,
+    .results-area .error-message {
+        font-size: 1rem;
+    }
+    .results-area .cost-summary {
+        font-size: 1.1rem;
+    }
+
+    .map-section .map-title { font-size: 1.5rem; }
+    .folium-map-container {
+        height: 350px; /* Altura do container do mapa em telas menores */
+    }
+}
+
+@media (max-width: 480px) {
+    h1 { font-size: 1.8rem; }
+    .hero-section .subtitle { font-size: 0.9rem; }
+
+    .folium-map-container {
+        height: 300px; /* Altura do container do mapa em telas muito pequenas */
+    }
+}
+
+/* --- Estilo de Scrollbar (mantido do seu tema anterior, ajustado para cores novas) --- */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+::-webkit-scrollbar-track {
+    background: var(--color-background);
+    border-radius: var(--border-radius-sm);
+}
+::-webkit-scrollbar-thumb {
+    background-color: var(--color-primary);
+    border-radius: var(--border-radius-sm);
+    border: 2px solid var(--color-background);
+}
+::-webkit-scrollbar-thumb:hover {
+    background-color: var(--color-primary-dark);
+}
+html { /* Para Firefox */
+    scrollbar-color: var(--color-primary) var(--color-background);
+    scrollbar-width: thin;
+}
