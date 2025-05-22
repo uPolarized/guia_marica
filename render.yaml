@@ -9,3 +9,13 @@ services:
         value: guia_marica.settings
       - key: PYTHON_VERSION
         value: 3.11
+      - key: DJANGO_SECRET_KEY
+        value: (n4%y2)f7%$m-a49!at4w*=75ph5zz$1kv9hpeg5yf+gfvb=35
+      - key: DJANGO_DEBUG
+        value: "False"
+      - key: PERSISTENT_STORAGE_PATH
+        value: /persistent
+    disk:
+      name: persistent_data
+      mountPath: /persistent
+      sizeGB: 1  # Aumente conforme necessidade
