@@ -18,4 +18,4 @@ services:
     disk:
       name: persistent_data
       mountPath: /persistent
-      sizeGB: 1  # Aumente conforme necessidade
+      sizeGB: 1
