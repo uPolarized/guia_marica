@@ -138,6 +138,13 @@
             mapSection.style.display = 'none';
             mapSection.classList.remove('visible');
         }
+        
+        window.addEventListener('resize', () => {
+    setTimeout(() => {
+        map.invalidateSize();
+    }, 200); // Delay garante que o container já foi redimensionado
+});
+
 
         // Inicialização do tsParticles para o efeito de bolhas
         if (window.tsParticles) {

@@ -29,6 +29,7 @@
     --spacing-xl: 2rem;    /* 32px */
     --border-radius: 8px;
     --transition-duration: 0.3s;
+    --transition-slow: 0.5s; /* Para animações mais suaves como a do map-section */
 }
 
 /* --- Reset Básico e Estilos Globais --- */
@@ -76,15 +77,15 @@ body::before { /* Imagem de fundo borrada */
     background-size: cover;
     background-position: center center;
     background-attachment: fixed;
-    filter: blur(10px) brightness(0.9); /* Aumentei um pouco o blur e adicionei brilho */
-    opacity: 0.8; /* Suaviza ainda mais a imagem */
+    filter: blur(10px) brightness(0.9);
+    opacity: 0.8;
 }
 
 #tsparticles-background { /* Container das partículas JS */
     position: fixed;
     width: 100%; height: 100%;
     top: 0; left: 0;
-    z-index: -1; 
+    z-index: -1;
 }
 
 /* Camadas de conteúdo principal sobre o fundo e partículas */
@@ -93,7 +94,7 @@ body::before { /* Imagem de fundo borrada */
 .map-section {
     position: relative;
     z-index: 1;
-    width: 100%;
+    width: 100%; /* Faz com que ocupem a largura do padding do body, mas serão limitados por max-width onde aplicável */
 }
 
 /* --- Tipografia --- */
@@ -102,21 +103,49 @@ h1, h2, h3, h4, h5, h6 {
     font-weight: 600;
     line-height: 1.3;
     margin-bottom: var(--spacing-md);
-    color: var(--color-text-main);
+    color: var(--color-text-main); /* Cor padrão para outros Hs, h1 e h2 têm gradiente */
 }
 
+/* Estilo de h1 com gradiente e animação */
 h1 {
-    font-size: 2.8rem; /* ~45px */
-    font-weight: 700;
+    font-size: 3.0rem; /* Ajustado para ser um pouco maior que o h2 */
+    font-weight: 900;
     text-align: center;
-    margin-bottom: var(--spacing-sm);
+    margin-top: var(--spacing-md);
+    margin-bottom: var(--spacing-lg); /* Aumentado */
+    background: linear-gradient(270deg, #c0bebe, #4A90E2, #3a7bc8, #b4b4b4); /* Usando cores do tema */
+    background-size: 600% 600%; /* Aumentado para animação mais suave */
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shine 10s ease infinite; /* Duração aumentada */
+    letter-spacing: 1.5px; /* Ajustado */
+    text-transform: uppercase;
+    text-shadow: 0 0 8px rgba(74, 144, 226, 0.25); /* Sombra com cor primária */
 }
 
+/* Estilo de h2 com gradiente e animação (similar ao h1 mas sutilmente diferente) */
 h2 {
-    font-size: 1.75rem; /* ~28px */
+    font-size: 2.0rem; /* Menor que h1 */
+    font-weight: 800;
     text-align: center;
+    margin-top: var(--spacing-lg); /* Mais espaço acima de h2 */
     margin-bottom: var(--spacing-lg);
-    color: var(--color-primary);
+    background: linear-gradient(270deg, #9e9e9e, #8DBF4C, #6a9c38, #b4b4b4); /* Usando cor secundária */
+    background-size: 600% 600%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shine 12s ease infinite reverse; /* Animação reversa e tempo diferente */
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    text-shadow: 0 0 6px rgba(141, 191, 76, 0.2); /* Sombra com cor secundária */
+}
+
+@keyframes shine {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
 }
 
 p {
@@ -140,25 +169,17 @@ a:hover, a:focus {
 }
 
 /* --- Seção Hero --- */
-
 .hero-section {
-    /* Propriedades de layout e empilhamento (do estilo completo anterior) */
-    width: 60%; /* Ocupa a largura disponível, respeitando o padding do body */
-    position: relative; 
-    z-index: 1; /* Para ficar sobre o fundo borrado e partículas */
-    box-sizing: border-box;
-
-    /* Estilos visuais do seu tema (mantidos) */
+    max-width: 800px; /* Limita a largura máxima da hero section */
+    margin-left: auto;
+    margin-right: auto;
     text-align: center;
-    background-color: rgba(255, 255, 255, 0.5); /* Fundo branco semi-transparente sobre o blur */
+    background-color: rgba(255, 255, 255, 0.5);
     border-radius: var(--border-radius);
     box-shadow: 0 4px 15px var(--color-shadow);
-    backdrop-filter: blur(3px); /* Vidro fosco sutil */
-
-    /* ***** INÍCIO DAS MUDANÇAS PARA DIMINUIR O TAMANHO ***** */
-    padding: var(--spacing-md) var(--spacing-sm); /* Reduzido: Ex: de (24px 16px) para (16px 8px) */
-    margin-bottom: var(--spacing-lg);            /* Reduzido: Ex: de 32px para 24px */
-    /* ***** FIM DAS MUDANÇAS PARA DIMINUIR O TAMANHO ***** */
+    backdrop-filter: blur(3px);
+    padding: var(--spacing-lg) var(--spacing-md); /* Aumentado um pouco o padding */
+    margin-bottom: var(--spacing-xl); /* Aumentado o espaçamento inferior */
 }
 
 /* --- Container Principal (Formulário e Resultados) --- */
@@ -167,7 +188,7 @@ a:hover, a:focus {
     padding: var(--spacing-xl);
     border-radius: var(--border-radius);
     box-shadow: 0 4px 25px var(--color-shadow);
-    max-width: 700px; /* Container mais compacto */
+    max-width: 700px;
     margin-left: auto;
     margin-right: auto;
     margin-bottom: var(--spacing-xl);
@@ -176,12 +197,12 @@ a:hover, a:focus {
 /* --- Seção do Formulário --- */
 .form-section {
     display: flex;
-    flex-direction: column; /* Empilha os grupos de input */
+    flex-direction: column;
     gap: var(--spacing-lg);
     margin-bottom: var(--spacing-xl);
 }
 .form-section form {
-    display: contents; /* Para que os filhos do form participem do flex do pai .form-section */
+    display: contents;
 }
 
 .input-group {
@@ -197,21 +218,21 @@ a:hover, a:focus {
 }
 
 .form-section select,
-.form-section input[type="text"] /* Se houver outros inputs */ {
+.form-section input[type="text"] {
     width: 100%;
     padding: var(--spacing-sm) var(--spacing-md);
     border: 1px solid var(--color-border);
     border-radius: var(--border-radius);
-    background-color: var(--color-background); /* Fundo sutilmente diferente da superfície */
+    background-color: var(--color-background);
     color: var(--color-text-main);
     font-size: 1rem;
     transition: border-color var(--transition-duration) ease, box-shadow var(--transition-duration) ease;
-    appearance: none; /* Remove aparência padrão do SO */
-    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="%235f6368" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/></svg>'); /* Seta customizada (cinza) */
+    appearance: none;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="%235f6368" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/></svg>');
     background-repeat: no-repeat;
     background-position: right var(--spacing-md) center;
     background-size: 1em;
-    padding-right: calc(var(--spacing-md) * 2 + 1em); /* Espaço para a seta */
+    padding-right: calc(var(--spacing-md) * 2 + 1em);
 }
 
 .form-section select:hover {
@@ -220,7 +241,7 @@ a:hover, a:focus {
 
 .form-section select:focus {
     border-color: var(--color-primary);
-    box-shadow: 0 0 0 3px rgba(var(--color-primary), 0.25); /* Glow suave no foco */
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.25); /* Usando a cor primária RGBa */
     outline: none;
     background-color: var(--color-surface);
 }
@@ -240,21 +261,21 @@ a:hover, a:focus {
 .cta-button {
     background-color: var(--color-primary);
     color: white;
-    box-shadow: 0 2px 5px rgba(var(--color-primary), 0.3);
+    box-shadow: 0 2px 5px rgba(74, 144, 226, 0.3); /* Usando a cor primária RGBa */
 }
 .cta-button:hover, .cta-button:focus {
     background-color: var(--color-primary-dark);
     transform: translateY(-2px);
-    box-shadow: 0 4px 10px rgba(var(--color-primary), 0.4);
+    box-shadow: 0 4px 10px rgba(74, 144, 226, 0.4); /* Usando a cor primária RGBa */
 }
 
 .reset-button {
     background-color: transparent;
     color: var(--color-text-light);
     border: 1px solid var(--color-border);
-    display: inline-block; /* Para centralizar o texto dentro do link/botão */
+    display: inline-block;
     width: auto;
-    align-self: center; /* Centraliza o botão de reset se o form for flex column */
+    align-self: center;
 }
 .reset-button:hover, .reset-button:focus {
     background-color: var(--color-background);
@@ -288,7 +309,7 @@ a:hover, a:focus {
     color: var(--color-secondary);
     margin-bottom: var(--spacing-lg);
 }
-.results-area .cost-summary strong { /* Rótulo "Custo Total Estimado:" */
+.results-area .cost-summary strong {
     color: var(--color-text-main);
     font-weight: 500;
 }
@@ -305,30 +326,25 @@ a:hover, a:focus {
 
 /* --- Seção do Mapa --- */
 .map-section {
-    /* Propriedades que você já tinha ou que estavam no estilo completo anterior para posicionamento e camada */
-    width: 50%; /* Ocupa a largura disponível */
-    position: relative; 
-    z-index: 1; /* Para ficar sobre o fundo borrado e partículas */
-    box-sizing: border-box; /* Importante se padding/border forem usados com width: 100% */
-    text-align: center; /* Para centralizar o .map-title e .folium-map-container se eles não tiverem width 100% */
+    /* width: 50%;  <-- Comentado ou removido para que use o width: 100% da regra geral acima */
+    /* ou defina um max-width como em .hero-section e .container */
+    max-width: 1000px; /* Exemplo de max-width para a seção do mapa */
+    margin-left: auto; /* Para centralizar se max-width for usado */
+    margin-right: auto; /* Para centralizar se max-width for usado */
     
-    /* Estilos visuais do seu tema */
-    background-color: rgba(255, 255, 255, 0.5); /* Fundo branco semi-transparente sobre o blur */
+    /* Estilos visuais mantidos */
+    background-color: rgba(255, 255, 255, 0.5);
     border-radius: var(--border-radius);
     box-shadow: 0 4px 15px var(--color-shadow);
     backdrop-filter: blur(3px);
-
-    /* ***** INÍCIO DAS MUDANÇAS PARA DIMINUIR O TAMANHO ***** */
-    padding: var(--spacing-md); /* Reduzido de --spacing-lg (ex: de 24px para 16px) */
-    margin-top: var(--spacing-lg); /* Reduzido de --spacing-xl (ex: de 32px para 24px) */
-    /* Você pode ajustar ainda mais se desejar, ex: --spacing-sm para padding */
-    /* ***** FIM DAS MUDANÇAS PARA DIMINUIR O TAMANHO ***** */
-
-    /* Animação de aparição (mantida) */
+    padding: var(--spacing-md);
+    margin-top: var(--spacing-lg);
+    
+    /* Animação de aparição mantida */
     opacity: 0;
     transform: translateY(20px);
     transition: opacity var(--transition-slow) ease-out, transform var(--transition-slow) ease-out;
-    /* overflow: hidden; /* Descomente se o conteúdo vazar durante a animação */
+    text-align: center; /* Para centralizar o título do mapa e o container do mapa */
 }
 
 .map-section.visible {
@@ -336,33 +352,29 @@ a:hover, a:focus {
     transform: translateY(0);
 }
 
-/* Lembre-se que o título dentro desta seção também contribui para a altura percebida.
-   Seus estilos para .map-section .map-title já existem: */
-.map-section .map-title {
+.map-section .map-title { /* Título H2 dentro da seção do mapa */
     font-family: var(--font-heading);
-    font-size: 1.75rem; /* Ajustado no tema 'Maricá Natural & Clean' */
-    color: var(--color-primary);
-    margin-bottom: var(--spacing-md); /* Poderia reduzir de --spacing-lg para --spacing-md se o padding da seção diminuiu */
-    /* text-align: center; /* Já está no .map-section pai */
+    font-size: 2.0rem; /* Reajustado para ser consistente com o h2 geral */
+    /* A cor e outros estilos de h2 já vêm da regra geral de h2 */
+    margin-bottom: var(--spacing-md);
 }
 
 .folium-map-container {
     width: 100%;
-    max-width: 900px; /* Reduzido de 1300px */
-    height: 450px;    /* Reduzido de 600px - esta é a altura do container */
-    margin: 0 auto;
+    max-width: 900px; /* Mantido, mas o pai .map-section agora controla melhor a largura geral */
+    height: 450px;
+    margin: 0 auto; /* Centraliza o container do mapa dentro da .map-section */
     border: 1px solid var(--color-border);
     border-radius: var(--border-radius);
     box-shadow: 0 2px 10px var(--color-shadow);
-    overflow: hidden; /* Para conter o iframe se ele for maior */
-    position: relative; /* Para o iframe se ajustar 100% */
+    overflow: hidden;
+    position: relative;
 }
 
-/* Estiliza o iframe gerado pelo Folium para ser responsivo DENTRO do container */
 .folium-map-container iframe {
     width: 100%;
     height: 100%;
-    border: none; /* Remove a borda padrão do iframe */
+    border: none;
 }
 
 /* --- Responsividade --- */
@@ -370,12 +382,16 @@ a:hover, a:focus {
     body {
         padding: var(--spacing-lg) var(--spacing-sm);
     }
-    h1 { font-size: 2.2rem; }
-    .hero-section .subtitle { font-size: 1rem; }
+    h1 { font-size: 2.2rem; } /* Ajustado para telas menores */
+    h2, .map-section .map-title { font-size: 1.75rem; } /* Ajustado para telas menores */
 
+    .hero-section {
+        padding: var(--spacing-md); /* Ajuste de padding para hero */
+        max-width: 95%; /* Hero section mais larga em tablets */
+    }
     .container {
         padding: var(--spacing-lg);
-        max-width: 100%; /* Ocupa a largura total menos o padding do body */
+        max-width: 95%; /* Container do formulário mais largo em tablets */
     }
     .form-section {
         gap: var(--spacing-md);
@@ -394,33 +410,48 @@ a:hover, a:focus {
         font-size: 1.1rem;
     }
 
-    .map-section .map-title { font-size: 1.5rem; }
+    /* AJUSTE PARA A SEÇÃO DO MAPA EM TELAS MENORES */
+    .map-section {
+        width: 100%; /* Seção do mapa ocupa toda a largura disponível (respeitando padding do body) */
+        padding: var(--spacing-sm); /* Menos padding lateral na seção do mapa */
+        max-width: 100%; /* Remove o max-width anterior para ocupar a largura */
+    }
+    
     .folium-map-container {
         height: 350px; /* Altura do container do mapa em telas menores */
+        /* max-width: 100%;  Não precisa, já que o width é 100% do pai que já foi ajustado */
     }
 }
 
 @media (max-width: 480px) {
     h1 { font-size: 1.8rem; }
-    .hero-section .subtitle { font-size: 0.9rem; }
+    h2, .map-section .map-title { font-size: 1.5rem; }
 
+    .hero-section, .container {
+        padding: var(--spacing-sm); /* Ainda menos padding */
+    }
+
+    /* .map-section já está 100% width do @media (max-width: 768px) */
+    
     .folium-map-container {
-        height: 300px; /* Altura do container do mapa em telas muito pequenas */
+        height: 300px;
     }
 }
 
-/* --- Estilo de Scrollbar (mantido do seu tema anterior, ajustado para cores novas) --- */
+/* --- Estilo de Scrollbar --- */
 ::-webkit-scrollbar {
     width: 10px;
     height: 10px;
 }
 ::-webkit-scrollbar-track {
     background: var(--color-background);
-    border-radius: var(--border-radius-sm);
+    /* border-radius: var(--border-radius-sm);  Se você tiver essa variável */
+    border-radius: 4px; /* Exemplo */
 }
 ::-webkit-scrollbar-thumb {
     background-color: var(--color-primary);
-    border-radius: var(--border-radius-sm);
+    /* border-radius: var(--border-radius-sm); */
+    border-radius: 4px; /* Exemplo */
     border: 2px solid var(--color-background);
 }
 ::-webkit-scrollbar-thumb:hover {
