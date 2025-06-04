@@ -17,7 +17,6 @@ GRAPH_CACHE_FILE = os.path.join(settings.MEDIA_ROOT, 'marica_road_network.graphm
 
 
 # Dicionário com informações para os pop-ups
-# ATENÇÃO: Atualize as descrições e imagens para os NOVOS PONTOS ADICIONADOS
 pontos_turisticos_info = {
     "Lagoa de Araçatiba": {
         "descricao": "Principal cartão-postal do Centro de Maricá, com orla revitalizada, ciclovia e o famoso letreiro 'Eu Amo Maricá'. Ideal para caminhadas e lazer.",

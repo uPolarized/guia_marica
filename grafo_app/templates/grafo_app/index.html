@@ -3,21 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guia Turístico Inteligente de Maricá</title> {# Considere usar um dos títulos criativos que discutimos #}
+    <title>Guia Turístico Inteligente de Maricá</title>
     {% load static %}
     <link 
-      rel="stylesheet" 
-      href="{% static 'grafo_app/css/style.css' %}?v=2.0.5"  {# Incremente a versão se alterar o style.css #}
+        rel="stylesheet" 
+        href="{% static 'grafo_app/css/style.css' %}?v=2.0.5"  {# Certifique-se que esta é a versão correta do seu CSS #}
     >
     <link 
-      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" 
-      rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" 
+        rel="stylesheet"
     >
     <link 
-      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" 
-      rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" 
+        rel="stylesheet"
     >
-    {# Link para a biblioteca tsParticles (se for usar o efeito de bolhas) #}
+    {# Leaflet CSS (necessário para o mapa Folium funcionar corretamente) #}
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+          integrity="sha256-p4NxAoJBhγραφή_app/css/style.csskWAngz0QsNKTBNsMZU9ZXVMdHGWGLw NHSdkdnkVM="
+          crossorigin=""/>
+    {# Leaflet JavaScript (deve vir ANTES do script que usa L) #}
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+            crossorigin=""></script>
+            
+    {# Link para a biblioteca tsParticles #}
     <script src="https://cdn.jsdelivr.net/npm/tsparticles@2.12.0/tsparticles.bundle.min.js"></script>
 </head>
 <body>
@@ -30,16 +39,16 @@
 
     <div class="container">
         <div class="form-section">
-            <form method="POST" action="{% url 'home' %}">
+            <form method="POST" action="{% url 'home' %}"> {# Certifique-se que 'home' é o nome da sua URL #}
                 {% csrf_token %}
                 <div class="input-group">
-                    <label for="origem">Origem</label>
-                    <select name="origem_selecionada" id="origem"> 
+                    <label for="id_origem_selecionada">Origem</label> {# Mudado 'origem' para 'id_origem_selecionada' para consistência #}
+                    <select name="origem_selecionada" id="id_origem_selecionada"> 
                         <option value="" {% if not selected_origem %}selected{% endif %} disabled>Selecione a Origem</option>
                         {% for ponto in pontos_disponiveis %}
                             <option 
-                              value="{{ ponto }}" 
-                              {% if ponto == selected_origem %}selected{% endif %}
+                                value="{{ ponto }}" 
+                                {% if ponto == selected_origem %}selected{% endif %}
                             >
                                 {{ ponto }}
                             </option>
@@ -47,13 +56,13 @@
                     </select>
                 </div>
                 <div class="input-group">
-                    <label for="destino">Destino</label>
-                    <select name="destino_selecionado" id="destino">
+                    <label for="id_destino_selecionado">Destino</label> {# Mudado 'destino' para 'id_destino_selecionado' #}
+                    <select name="destino_selecionado" id="id_destino_selecionado">
                         <option value="" {% if not selected_destino %}selected{% endif %} disabled>Selecione o Destino</option>
                         {% for ponto in pontos_disponiveis %}
                             <option 
-                              value="{{ ponto }}" 
-                              {% if ponto == selected_destino %}selected{% endif %}
+                                value="{{ ponto }}" 
+                                {% if ponto == selected_destino %}selected{% endif %}
                             >
                                 {{ ponto }}
                             </option>
@@ -61,21 +70,19 @@
                     </select>
                 </div>
 
-                {# ***** NOVO CAMPO PARA CONDIÇÃO DO TRÂNSITO ***** #}
                 <div class="input-group">
-                    <label for="traffic_condition">Condição do Trânsito</label>
-                    <select name="traffic_condition" id="traffic_condition">
+                    <label for="id_traffic_condition">Condição do Trânsito</label> {# Mudado 'traffic_condition' para 'id_traffic_condition' #}
+                    <select name="traffic_condition" id="id_traffic_condition">
                         <option value="livre" {% if selected_traffic_condition == "livre" %}selected{% endif %}>Trânsito Livre (Ideal)</option>
                         <option value="moderado" {% if selected_traffic_condition == "moderado" %}selected{% endif %}>Trânsito Moderado</option>
                         <option value="intenso" {% if selected_traffic_condition == "intenso" %}selected{% endif %}>Trânsito Intenso</option>
                     </select>
                 </div>
-                {# ***** FIM DO NOVO CAMPO ***** #}
 
                 <button type="submit" class="cta-button">Calcular Caminho</button>
             </form>
             <p style="text-align: center; margin-top: 15px;">
-                <a href="{% url 'home' %}" class="reset-button">Limpar Seleção e Rota</a>
+                <a href="{% url 'home' %}" class="reset-button">Limpar Seleção e Rota</a> {# Certifique-se que 'home' é o nome da sua URL #}
             </p>
         </div>
 
@@ -113,7 +120,6 @@
 
     <script>
     document.addEventListener('DOMContentLoaded', () => {
-        // Lógica para mostrar/esconder a seção do mapa
         const mapSection = document.getElementById('map-section');
         const showMapDataElement = document.getElementById('show_map_data_id');
         let shouldShowMap = false;
@@ -126,11 +132,50 @@
             }
         }
 
+        var leafletMapInstance = null; // Variável para guardar a instância do mapa
+
+        function findAndSetupMap() {
+            if (typeof L !== 'undefined' && L.Map && L.Map.instances && L.Map.instances.length > 0) {
+                leafletMapInstance = L.Map.instances[0]; // Pega a primeira (e provavelmente única) instância do mapa
+                console.log("Instância do mapa Leaflet encontrada e configurada:", leafletMapInstance);
+
+                // Adiciona listener de redimensionamento da janela
+                window.addEventListener('resize', function() {
+                    if (leafletMapInstance && mapSection.style.display === 'block') {
+                        console.log("Redimensionando janela, invalidando tamanho do mapa.");
+                        // Adiciona um pequeno delay para garantir que o DOM foi atualizado
+                        setTimeout(() => {
+                            leafletMapInstance.invalidateSize();
+                        }, 200); 
+                    }
+                });
+
+                // Invalida o tamanho uma vez se o mapa estiver sendo exibido agora
+                if (shouldShowMap && mapSection.style.display === 'block') {
+                     // Adiciona um pequeno delay para garantir que o container do mapa está com as dimensões finais
+                    setTimeout(() => {
+                        console.log("Mapa exibido na carga, invalidando tamanho.");
+                        leafletMapInstance.invalidateSize();
+                    }, 250); // Ajuste este delay se necessário
+                }
+
+            } else if (document.querySelector('.folium-map')) { 
+                // Se L.Map.instances não estiver disponível imediatamente, tenta de novo em breve
+                // Isso pode acontecer se o script do Folium demorar um pouco mais para criar o mapa
+                console.warn("Instância do mapa Leaflet não encontrada imediatamente. Tentando novamente em 500ms...");
+                setTimeout(findAndSetupMap, 500);
+            } else {
+                console.error("Não foi possível encontrar a div do mapa Folium ou a instância do Leaflet. O invalidateSize pode não funcionar.");
+            }
+        }
+
         if (shouldShowMap) {
             mapSection.style.display = 'block'; 
-            void mapSection.offsetWidth; 
+            void mapSection.offsetWidth; // Força reflow para animação CSS (se houver)
             mapSection.classList.add('visible');
             
+            findAndSetupMap(); // Tenta encontrar o mapa e configurar listeners/invalidateSize
+
             setTimeout(() => {
                 mapSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }, 150); 
@@ -139,33 +184,23 @@
             mapSection.classList.remove('visible');
         }
         
-        window.addEventListener('resize', () => {
-    setTimeout(() => {
-        map.invalidateSize();
-    }, 200); // Delay garante que o container já foi redimensionado
-});
-
-
-        // Inicialização do tsParticles para o efeito de bolhas
+        // Inicialização do tsParticles (seu código existente)
         if (window.tsParticles) {
             tsParticles.load("tsparticles-background", {
-                // Esta é uma configuração de exemplo. Consulte a documentação do tsParticles para mais opções.
-                // Você pode também usar presets como "bubbles", "snow", "stars", etc.
-                // preset: "bubbles", 
-                fullScreen: { // Garante que cubra toda a tela do body, respeitando o z-index
+                fullScreen: {
                     enable: true,
-                    zIndex: -1 // Mantém atrás do conteúdo principal (combinado com o CSS)
+                    zIndex: -1 
                 },
                 particles: {
                     number: {
                         value: 30, 
                         density: {
                             enable: true,
-                            area: 800 // Alterado de value_area para area (nova sintaxe tsParticles)
+                            area: 800 
                         }
                     },
                     color: {
-                        value: "rgba(0, 188, 212, 0.25)" // Cor das bolhas (seu --neon-blue com transparência)
+                        value: "rgba(74, 144, 226, 0.25)" // Usando a cor primária do tema com transparência
                     },
                     shape: {
                         type: "circle" 
@@ -206,21 +241,22 @@
                     }
                 },
                 interactivity: { 
-                    detectsOn: "canvas", // Alterado de detect_on
+                    detectsOn: "canvas",
                     events: {
-                        onHover: { // Alterado de onhover
+                        onHover: {
                             enable: false,
                         },
-                        onClick: { // Alterado de onclick
+                        onClick: {
                             enable: false,
                         },
                         resize: { enable: true } 
                     }
                 },
                 detectRetina: true,
-                // background: { // Removido, pois o canvas das partículas deve ser transparente por padrão
-                //    color: "transparent" 
-                // }
+            }).then(container => {
+                console.log("tsParticles carregado e iniciado.");
+            }).catch(error => {
+                console.error("Erro ao carregar tsParticles:", error);
             });
         } else {
             console.warn("Biblioteca tsParticles não carregada. Efeito de bolhas não será iniciado.");

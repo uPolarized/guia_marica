@@ -1,0 +1,182 @@
+/* grafo_app/static/css/bar.css */
+
+/*
+   Este arquivo contém estilos de layout e componentes específicos da barra lateral e do mapa.
+   Ele deve ser carregado APÓS o style.css global para garantir que os estilos de layout
+   específicos e de componentes da sidebar/mapa sobrescrevam ou complementem os estilos globais.
+*/
+
+/* --- Layout Principal (Flexbox) --- */
+body {
+    /* Estas propriedades sobrescrevem/adicionam ao body no style.css para o layout flexbox principal */
+    display: flex;
+    flex-direction: column;
+    /* Outros estilos de body (font-family, background-color, color, line-height, min-height, padding, position, overflow-x, animation) já vêm do style.css global */
+}
+
+/* Camadas de conteúdo principal sobre o fundo e partículas
+   Essas regras já estão no seu style.css global, mas se as seções hero/container/map-section
+   são filhos diretos de body (como no seu index.html), elas precisarão de `width: 100%;`
+   e `position: relative; z-index: 1;` do `style.css` para serem visíveis sobre as partículas.
+   Apenas certifique-se de que o main-content-wrapper (novo) também tenha z-index:1;
+*/
+
+/* --- Wrapper Principal do Conteúdo (Sidebar + Mapa) --- */
+.main-content-wrapper {
+    display: flex;
+    flex-grow: 1; /* Permite que o wrapper preencha o espaço restante */
+    padding: var(--spacing-md); /* Use a variável de espaçamento do seu style.css */
+    gap: var(--spacing-md); /* Espaço entre sidebar e mapa */
+    position: relative;
+    z-index: 1; /* Garante que esteja acima do background de partículas */
+    max-width: 1400px; /* Limite a largura máxima do conteúdo principal */
+    width: 100%; /* Ocupa a largura total dentro do padding do body */
+    margin: 0 auto; /* Centraliza o wrapper */
+    margin-bottom: var(--spacing-xl); /* Espaçamento entre o wrapper e o rodapé se houver */
+}
+
+/* --- Estilos da Barra Lateral --- */
+#sidebar {
+    width: 350px; /* Largura da barra lateral fixa */
+    min-width: 300px; /* Garante que não encolha demais */
+    background-color: var(--color-surface); /* Usa a cor de surface do seu tema */
+    color: var(--color-text-main); /* Usa a cor de texto principal */
+    padding: var(--spacing-lg); /* Padding interno da sidebar */
+    border-radius: var(--border-radius);
+    box-shadow: 0 4px 12px var(--color-shadow);
+    overflow-y: auto; /* Scroll se o conteúdo for muito longo */
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xl); /* Espaço entre as seções dentro da sidebar (form, results, pontos) */
+}
+
+#sidebar h2, #sidebar h3 {
+    /* Font-family, font-weight já vêm de style.css. Aqui, apenas cor e alinhamento específico da sidebar */
+    color: var(--color-primary); /* Títulos da sidebar, usando a cor primária */
+    text-align: center;
+    margin-bottom: var(--spacing-md); /* Espaçamento inferior dos títulos */
+}
+#sidebar h3 {
+    font-size: 1.4rem; /* Ajustado para REM */
+}
+
+/* --- Estilos da Seção do Mapa --- */
+.map-section {
+    flex-grow: 1; /* Permite que o mapa preencha o espaço restante */
+    background-color: var(--color-surface); /* Usa a cor de surface do seu tema */
+    border-radius: var(--border-radius);
+    box-shadow: 0 4px 12px var(--color-shadow);
+    overflow: hidden; /* Garante que o mapa não vaze das bordas arredondadas */
+    display: flex;
+    flex-direction: column;
+    padding: var(--spacing-md); /* Padding interno da seção do mapa */
+    text-align: center; /* Para centralizar o título do mapa e o container do mapa */
+
+    /* Animação de aparição da seção do mapa (se você quiser movê-la para cá) */
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity var(--transition-slow) ease-out, transform var(--transition-slow) ease-out;
+}
+
+.map-section.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.map-section .map-title { /* Título H2 dentro da seção do mapa */
+    /* Font-family, font-size, font-weight já vêm de style.css para h2 */
+    color: var(--color-primary); /* Cor primária para o título do mapa */
+    margin-bottom: var(--spacing-md); /* Espaçamento inferior */
+}
+
+.folium-map-container {
+    width: 100%;
+    height: 100%; /* O mapa Folium preencherá este container */
+    min-height: 450px; /* Altura mínima para o mapa */
+    margin: 0 auto; /* Centraliza o container do mapa */
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius);
+    box-shadow: 0 2px 10px var(--color-shadow);
+    overflow: hidden;
+    position: relative;
+}
+
+.folium-map-container iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+/* --- Estilos para os Cards de Pontos na Barra Lateral --- */
+.point-card {
+    background-color: #495057; /* Cor específica para cards na sidebar, ou use var(--color-surface-darker) se tiver */
+    color: var(--light-text-sidebar); /* Cor de texto mais clara para contraste com fundo escuro */
+    border-radius: var(--border-radius);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-md); /* Espaçamento entre os cards */
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    transition: transform var(--transition-duration) ease, box-shadow var(--transition-duration) ease;
+}
+
+.point-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.25);
+}
+
+.point-card h4 {
+    color: var(--color-primary); /* Título do card com cor primária */
+    font-size: 1.1rem; /* Ajustado para REM */
+    font-weight: 700;
+    margin-top: 0;
+    margin-bottom: var(--spacing-sm);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding-bottom: var(--spacing-sm);
+}
+
+.point-card p {
+    font-size: 0.95rem; /* Ajustado para REM */
+    color: #ced4da; /* Cor específica para a descrição do card, ou use uma variável apropriada */
+    line-height: 1.6;
+    margin-bottom: var(--spacing-sm);
+}
+
+.point-card img {
+    max-width: 100%;
+    height: 150px; /* Altura fixa para consistência das imagens */
+    object-fit: cover; /* Garante que a imagem preencha o espaço, cortando se necessário */
+    border-radius: var(--border-radius);
+    margin-bottom: var(--spacing-md);
+    display: block; /* Remove espaço extra abaixo da imagem */
+}
+
+/* --- Responsividade --- */
+@media (max-width: 992px) {
+    .main-content-wrapper {
+        flex-direction: column; /* Empilha sidebar e mapa em telas menores */
+        padding: var(--spacing-md) var(--spacing-sm); /* Ajusta padding para telas menores */
+    }
+
+    #sidebar {
+        width: 100%; /* Ocupa toda a largura */
+        min-width: unset;
+        max-height: 60vh; /* Altura máxima para sidebar, para que não ocupe a tela toda */
+    }
+
+    .map-section {
+        padding: var(--spacing-sm); /* Menos padding lateral na seção do mapa */
+    }
+}
+
+@media (max-width: 768px) {
+    /* Ajustes específicos para telas médias (já cobertos pelo 992px na maioria) */
+}
+
+@media (max-width: 480px) {
+    /* Ajustes para telas muito pequenas */
+    .map-section {
+        min-height: 300px; /* Altura mínima para o mapa em telas muito pequenas */
+    }
+    .folium-map-container {
+        min-height: 300px;
+    }
+}
