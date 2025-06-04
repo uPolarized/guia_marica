@@ -67,7 +67,7 @@ pontos_turisticos_info = {
         "descricao": "Marco histórico e religioso no centro de Maricá, datada do século XVIII.",
         "imagem": "https://casaruralmarica.com/wp-content/uploads/2024/06/igreja-nossa-senhora-do-amparo-1024x702.jpg" # Exemplo
     },
-    "Rampa de Voo Livre Itaipuaçu": {
+    "Rampa de Voo Livre de Maricá": {
         "descricao": "Localizada no Morro da Serrinha, oferece vistas espetaculares e é ponto de partida para voos de parapente.",
         "imagem": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRDYjGEafG_z3kHMJAvoKYJNHma9lO6Ikwxww&s" # Exemplo
     },
@@ -113,11 +113,11 @@ def home(request):
         "Canal da Ponta Negra": [-22.956461830728692, -42.69379147142791],
         "Pedra de Inoã": [-22.92717211701768, -42.91139602661133],
         # NOVOS PONTOS
-        "Praia da Barra de Maricá": [-22.9254, -42.7965],
+        "Praia da Barra de Maricá": [-22.961303067590116, -42.8191866701701],
         "Praia de Cordeirinho": [-22.957305056138484, -42.746470651659365],
         "Praia de Guaratiba": [-22.96015449066947, -42.79945768791294],
         "Igreja Matriz N. S. do Amparo": [-22.919542513488068, -42.81849029666066],
-        "Rampa de Voo Livre Itaipuaçu": [-22.888071398541065, -42.86304991408861],
+        "Rampa de Voo Livre de Maricá": [-22.888071398541065, -42.86304991408861],
         "Orla de São José do Imbassaí": [-22.935067975408934, -42.86929071583087],
         "Fazenda Pública Joaquín Piñero": [-22.89689537737279, -42.69433887994245],
     }
