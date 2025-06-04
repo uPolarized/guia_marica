@@ -105,10 +105,10 @@ def home(request):
     # Coordenadas atualizadas e novos pontos adicionados
     pontos_turisticos_geographic = {
         "Lagoa de Araçatiba": [-22.9265931804576, -42.8271107153453],
-        "Praia de Itaipuaçu": [-22.9638, -42.9677], # Coordenada CENTRAL da praia
+        "Praia de Itaipuaçu": [-22.96913229065602, -42.979235341858285], # Coordenada CENTRAL da praia
         "Farol de Ponta Negra": [-22.96047391794836, -42.692140476786996],
         "Centro de Maricá": [-22.914748273450563, -42.81959634222559],
-        "Pedra do Elefante": [-22.9624, -43.0112], # Coordenada do MIRANTE DE ITAIPUAÇU (acesso)
+        "Pedra do Elefante": [-22.962941904630014, -43.02137400678821], # Coordenada do MIRANTE DE ITAIPUAÇU (acesso)
         "Cachoeira do Espraiado": [-22.878143312750304, -42.697516445305816],
         "Canal da Ponta Negra": [-22.956461830728692, -42.69379147142791],
         "Pedra de Inoã": [-22.92717211701768, -42.91139602661133],
@@ -116,10 +116,10 @@ def home(request):
         "Praia da Barra de Maricá": [-22.961303067590116, -42.8191866701701],
         "Praia de Cordeirinho": [-22.957305056138484, -42.746470651659365],
         "Praia de Guaratiba": [-22.96015449066947, -42.79945768791294],
-        "Igreja Matriz N. S. do Amparo": [-22.919542513488068, -42.81849029666066],
+        "Igreja Matriz N. S. do Amparo": [-22.920063679881853, -42.81929740974707],
         "Rampa de Voo Livre de Maricá": [-22.888071398541065, -42.86304991408861],
         "Orla de São José do Imbassaí": [-22.935067975408934, -42.86929071583087],
-        "Fazenda Pública Joaquín Piñero": [-22.89689537737279, -42.69433887994245],
+        "Fazenda Pública Joaquín Piñero": [-22.89778111820182, -42.69607701483277],
     }
     pontos_disponiveis = sorted(list(pontos_turisticos_geographic.keys()))
     
