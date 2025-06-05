@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guia Turístico Inteligente de Maricá</title>
+    <title>Maricá-Vilhoso Guia Turístico</title>
     {% load static %}
     <link 
         rel="stylesheet" 
-        href="{% static 'grafo_app/css/style.css' %}?v=2.0.5"  {# Certifique-se que esta é a versão correta do seu CSS #}
+        href="{% static 'grafo_app/css/style.css' %}?v=2.0.5" 
     >
     <link 
         href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" 
@@ -17,32 +17,29 @@
         href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" 
         rel="stylesheet"
     >
-    {# Leaflet CSS (necessário para o mapa Folium funcionar corretamente) #}
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-          integrity="sha256-p4NxAoJBhγραφή_app/css/style.csskWAngz0QsNKTBNsMZU9ZXVMdHGWGLw NHSdkdnkVM="
-          crossorigin=""/>
-    {# Leaflet JavaScript (deve vir ANTES do script que usa L) #}
+        integrity="sha256-p4NxAoJBhγραφή_app/css/style.csskWAngz0QsNKTBNsMZU9ZXVMdHGWGLw NHSdkdnkVM="
+        crossorigin=""/>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
             integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
             crossorigin=""></script>
             
-    {# Link para a biblioteca tsParticles #}
     <script src="https://cdn.jsdelivr.net/npm/tsparticles@2.12.0/tsparticles.bundle.min.js"></script>
 </head>
 <body>
     <div id="tsparticles-background"></div>
 
     <div class="hero-section">
-        <h1>Guia Turístico Inteligente de Maricá</h1>
+        <h1>Maricá-Vilhoso Guia Turístico</h1>
         <p class="subtitle">Descubra os melhores caminhos pelas belezas naturais!</p>
     </div>
 
     <div class="container">
         <div class="form-section">
-            <form method="POST" action="{% url 'home' %}"> {# Certifique-se que 'home' é o nome da sua URL #}
+            <form method="POST" action="{% url 'home' %}"> 
                 {% csrf_token %}
                 <div class="input-group">
-                    <label for="id_origem_selecionada">Origem</label> {# Mudado 'origem' para 'id_origem_selecionada' para consistência #}
+                    <label for="id_origem_selecionada">Origem</label> 
                     <select name="origem_selecionada" id="id_origem_selecionada"> 
                         <option value="" {% if not selected_origem %}selected{% endif %} disabled>Selecione a Origem</option>
                         {% for ponto in pontos_disponiveis %}
@@ -56,7 +53,7 @@
                     </select>
                 </div>
                 <div class="input-group">
-                    <label for="id_destino_selecionado">Destino</label> {# Mudado 'destino' para 'id_destino_selecionado' #}
+                    <label for="id_destino_selecionado">Destino</label> 
                     <select name="destino_selecionado" id="id_destino_selecionado">
                         <option value="" {% if not selected_destino %}selected{% endif %} disabled>Selecione o Destino</option>
                         {% for ponto in pontos_disponiveis %}
@@ -71,7 +68,7 @@
                 </div>
 
                 <div class="input-group">
-                    <label for="id_traffic_condition">Condição do Trânsito</label> {# Mudado 'traffic_condition' para 'id_traffic_condition' #}
+                    <label for="id_traffic_condition">Condição do Trânsito</label> 
                     <select name="traffic_condition" id="id_traffic_condition">
                         <option value="livre" {% if selected_traffic_condition == "livre" %}selected{% endif %}>Trânsito Livre (Ideal)</option>
                         <option value="moderado" {% if selected_traffic_condition == "moderado" %}selected{% endif %}>Trânsito Moderado</option>
@@ -82,7 +79,7 @@
                 <button type="submit" class="cta-button">Calcular Caminho</button>
             </form>
             <p style="text-align: center; margin-top: 15px;">
-                <a href="{% url 'home' %}" class="reset-button">Limpar Seleção e Rota</a> {# Certifique-se que 'home' é o nome da sua URL #}
+                <a href="{% url 'home' %}" class="reset-button">Limpar Seleção e Rota</a> 
             </p>
         </div>
 
@@ -132,36 +129,30 @@
             }
         }
 
-        var leafletMapInstance = null; // Variável para guardar a instância do mapa
+        var leafletMapInstance = null; 
 
         function findAndSetupMap() {
             if (typeof L !== 'undefined' && L.Map && L.Map.instances && L.Map.instances.length > 0) {
-                leafletMapInstance = L.Map.instances[0]; // Pega a primeira (e provavelmente única) instância do mapa
+                leafletMapInstance = L.Map.instances[0]; 
                 console.log("Instância do mapa Leaflet encontrada e configurada:", leafletMapInstance);
 
-                // Adiciona listener de redimensionamento da janela
                 window.addEventListener('resize', function() {
                     if (leafletMapInstance && mapSection.style.display === 'block') {
                         console.log("Redimensionando janela, invalidando tamanho do mapa.");
-                        // Adiciona um pequeno delay para garantir que o DOM foi atualizado
                         setTimeout(() => {
                             leafletMapInstance.invalidateSize();
                         }, 200); 
                     }
                 });
 
-                // Invalida o tamanho uma vez se o mapa estiver sendo exibido agora
                 if (shouldShowMap && mapSection.style.display === 'block') {
-                     // Adiciona um pequeno delay para garantir que o container do mapa está com as dimensões finais
                     setTimeout(() => {
                         console.log("Mapa exibido na carga, invalidando tamanho.");
                         leafletMapInstance.invalidateSize();
-                    }, 250); // Ajuste este delay se necessário
+                    }, 250); 
                 }
 
             } else if (document.querySelector('.folium-map')) { 
-                // Se L.Map.instances não estiver disponível imediatamente, tenta de novo em breve
-                // Isso pode acontecer se o script do Folium demorar um pouco mais para criar o mapa
                 console.warn("Instância do mapa Leaflet não encontrada imediatamente. Tentando novamente em 500ms...");
                 setTimeout(findAndSetupMap, 500);
             } else {
@@ -171,10 +162,10 @@
 
         if (shouldShowMap) {
             mapSection.style.display = 'block'; 
-            void mapSection.offsetWidth; // Força reflow para animação CSS (se houver)
+            void mapSection.offsetWidth; 
             mapSection.classList.add('visible');
             
-            findAndSetupMap(); // Tenta encontrar o mapa e configurar listeners/invalidateSize
+            findAndSetupMap(); 
 
             setTimeout(() => {
                 mapSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -184,7 +175,6 @@
             mapSection.classList.remove('visible');
         }
         
-        // Inicialização do tsParticles (seu código existente)
         if (window.tsParticles) {
             tsParticles.load("tsparticles-background", {
                 fullScreen: {
@@ -200,7 +190,7 @@
                         }
                     },
                     color: {
-                        value: "rgba(74, 144, 226, 0.25)" // Usando a cor primária do tema com transparência
+                        value: "rgba(74, 144, 226, 0.25)" 
                     },
                     shape: {
                         type: "circle" 

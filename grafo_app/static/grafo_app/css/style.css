@@ -1,38 +1,33 @@
-/* D:\projeto-grafo\grafo_app\static\grafo_app\css\style.css */
-
-/* --- :root - Variáveis Globais do Tema "Maricá Natural & Clean" --- */
+/* Definição das variáveis globais do tema */
 :root {
-    /* Cores */
-    --color-background: #f4f7f6; /* Fundo principal da página (cinza muito claro) */
-    --color-surface: #ffffff;    /* Fundo de cards, containers (branco) */
-    --color-primary: #4A90E2;   /* Azul suave para acentos e botões */
-    --color-primary-dark: #3a7bc8; /* Azul mais escuro para hover */
-    --color-secondary: #8DBF4C; /* Verde sálvia para outros destaques */
-    --color-text-main: #333333;    /* Texto principal (cinza escuro) */
-    --color-text-light: #5f6368; /* Texto secundário/labels (cinza médio) */
-    --color-border: #dee2e6;   /* Bordas suaves */
-    --color-error: #d9534f;     /* Vermelho para mensagens de erro */
-    --color-success: #5cb85c;   /* Verde para sucesso (pode ser o --color-secondary) */
-    --color-shadow: rgba(0, 0, 0, 0.1); /* Sombra suave */
+    --color-background: #f4f7f6; 
+    --color-surface: #ffffff;   
+    --color-primary: #4A90E2;   
+    --color-primary-dark: #3a7bc8; 
+    --color-secondary: #8DBF4C; 
+    --color-text-main: #333333;   
+    --color-text-light: #5f6368; 
+    --color-border: #dee2e6;   
+    --color-error: #d9534f;     
+    --color-success: #5cb85c;   
+    --color-shadow: rgba(0, 0, 0, 0.1); 
 
-    /* Tipografia */
     --font-heading: 'Poppins', sans-serif;
     --font-body: 'Montserrat', sans-serif;
     --font-size-base: 16px;
     --line-height-base: 1.6;
 
-    /* Espaçamento e Bordas */
-    --spacing-xs: 0.25rem; /* 4px */
-    --spacing-sm: 0.5rem;  /* 8px */
-    --spacing-md: 1rem;    /* 16px */
-    --spacing-lg: 1.5rem;  /* 24px */
-    --spacing-xl: 2rem;    /* 32px */
+    --spacing-xs: 0.25rem; 
+    --spacing-sm: 0.5rem;  
+    --spacing-md: 1rem;    
+    --spacing-lg: 1.5rem;  
+    --spacing-xl: 2rem;    
     --border-radius: 8px;
     --transition-duration: 0.3s;
-    --transition-slow: 0.5s; /* Para animações mais suaves como a do map-section */
+    --transition-slow: 0.5s; 
 }
 
-/* --- Reset Básico e Estilos Globais --- */
+/* Reset de estilos e configurações globais básicas */
 *,
 *::before,
 *::after {
@@ -50,13 +45,13 @@ body {
     font-family: var(--font-body);
     line-height: var(--line-height-base);
     color: var(--color-text-main);
-    background-color: var(--color-background); /* Cor de fallback */
+    background-color: var(--color-background); 
     min-height: 100vh;
     display: flex;
     flex-direction: column;
     align-items: center;
     padding: var(--spacing-xl) var(--spacing-md);
-    position: relative; /* Para z-index dos pseudo-elementos e partículas */
+    position: relative; 
     overflow-x: hidden;
     animation: fadeInBody 1s ease-out forwards;
 }
@@ -66,14 +61,14 @@ body {
     to   { opacity: 1; }
 }
 
-/* --- Imagem de Fundo Borrada e Partículas --- */
-body::before { /* Imagem de fundo borrada */
+/* Estilos para imagem de fundo, sobreposição e container de partículas */
+body::before { 
     content: "";
     position: fixed;
     left: 0; top: 0;
     width: 100vw; height: 100vh;
     z-index: -2;
-    background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRqRhmAgH03Py3PCqeE1DeesxWvusrFb92KHA&s'); /* SUBSTITUA PELA SUA IMAGEM */
+    background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRqRhmAgH03Py3PCqeE1DeesxWvusrFb92KHA&s'); 
     background-size: cover;
     background-position: center center;
     background-attachment: fixed;
@@ -81,65 +76,64 @@ body::before { /* Imagem de fundo borrada */
     opacity: 0.8;
 }
 
-#tsparticles-background { /* Container das partículas JS */
+#tsparticles-background { 
     position: fixed;
     width: 100%; height: 100%;
     top: 0; left: 0;
     z-index: -1;
 }
 
-/* Camadas de conteúdo principal sobre o fundo e partículas */
+/* Controle de empilhamento para seções principais de conteúdo */
 .hero-section,
 .container,
 .map-section {
     position: relative;
     z-index: 1;
-    width: 100%; /* Faz com que ocupem a largura do padding do body, mas serão limitados por max-width onde aplicável */
+    width: 100%; 
 }
 
-/* --- Tipografia --- */
+/* Estilos de tipografia: cabeçalhos (h1-h6), parágrafos e links */
 h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-heading);
     font-weight: 600;
     line-height: 1.3;
     margin-bottom: var(--spacing-md);
-    color: var(--color-text-main); /* Cor padrão para outros Hs, h1 e h2 têm gradiente */
+    color: var(--color-text-main); 
 }
 
-/* Estilo de h1 com gradiente e animação */
 h1 {
-    font-size: 3.0rem; /* Ajustado para ser um pouco maior que o h2 */
+    font-size: 3.0rem; 
     font-weight: 900;
     text-align: center;
     margin-top: var(--spacing-md);
-    margin-bottom: var(--spacing-lg); /* Aumentado */
-    background: linear-gradient(270deg, #c0bebe, #4A90E2, #3a7bc8, #b4b4b4); /* Usando cores do tema */
-    background-size: 600% 600%; /* Aumentado para animação mais suave */
+    margin-bottom: var(--spacing-lg); 
+    background: linear-gradient(270deg, #3a3939, #4A90E2, #3a7bc8, #161616); 
+    background-size: 700% 600%; 
+    
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
-    animation: shine 10s ease infinite; /* Duração aumentada */
-    letter-spacing: 1.5px; /* Ajustado */
+    animation: shine 10s ease infinite; 
+    letter-spacing: 1.5px; 
     text-transform: uppercase;
-    text-shadow: 0 0 8px rgba(74, 144, 226, 0.25); /* Sombra com cor primária */
+    text-shadow: 0 0 8px rgba(74, 144, 226, 0.25); 
 }
 
-/* Estilo de h2 com gradiente e animação (similar ao h1 mas sutilmente diferente) */
 h2 {
-    font-size: 2.0rem; /* Menor que h1 */
+    font-size: 2.0rem; 
     font-weight: 800;
     text-align: center;
-    margin-top: var(--spacing-lg); /* Mais espaço acima de h2 */
+    margin-top: var(--spacing-lg); 
     margin-bottom: var(--spacing-lg);
-    background: linear-gradient(270deg, #9e9e9e, #8DBF4C, #6a9c38, #b4b4b4); /* Usando cor secundária */
+    background: linear-gradient(270deg, #9e9e9e, #8DBF4C, #6a9c38, #b4b4b4); 
     background-size: 600% 600%;
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
-    animation: shine 12s ease infinite reverse; /* Animação reversa e tempo diferente */
+    animation: shine 12s ease infinite reverse; 
     letter-spacing: 1px;
     text-transform: uppercase;
-    text-shadow: 0 0 6px rgba(141, 191, 76, 0.2); /* Sombra com cor secundária */
+    text-shadow: 0 0 6px rgba(141, 191, 76, 0.2); 
 }
 
 @keyframes shine {
@@ -168,33 +162,122 @@ a:hover, a:focus {
     text-decoration: underline;
 }
 
-/* --- Seção Hero --- */
+/* Estilos para a seção de destaque (Hero Section) */
 .hero-section {
-    max-width: 800px; /* Limita a largura máxima da hero section */
+    max-width: 950px;
     margin-left: auto;
     margin-right: auto;
     text-align: center;
-    background-color: rgba(255, 255, 255, 0.5);
-    border-radius: var(--border-radius);
-    box-shadow: 0 4px 15px var(--color-shadow);
-    backdrop-filter: blur(3px);
-    padding: var(--spacing-lg) var(--spacing-md); /* Aumentado um pouco o padding */
-    margin-bottom: var(--spacing-xl); /* Aumentado o espaçamento inferior */
+    
+    background-color: rgba(255, 255, 255, 0.55); 
+    border-radius: var(--border-radius); 
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.17); 
+    backdrop-filter: blur(6px); 
+    -webkit-backdrop-filter: blur(6px); 
+    border: 1px solid rgba(255, 255, 255, 0.22); 
+
+    padding: var(--spacing-lg) var(--spacing-xl); 
+    margin-top: var(--spacing-lg); 
+    margin-bottom: var(--spacing-xl);
+
+    opacity: 0;
+    transform: translateY(-20px); 
+    animation: fadeInSlideUpHero 0.8s 0.3s ease-out forwards; 
+
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
 }
 
-/* --- Container Principal (Formulário e Resultados) --- */
-.container {
-    background-color: var(--color-surface);
-    padding: var(--spacing-xl);
-    border-radius: var(--border-radius);
-    box-shadow: 0 4px 25px var(--color-shadow);
-    max-width: 700px;
+.hero-section:hover {
+    transform: translateY(-5px); 
+    box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.2); 
+}
+
+@keyframes fadeInSlideUpHero {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.hero-section .subtitle {
+    font-size: 1.15rem;
+    color: var(--color-primary); 
+    font-weight: 400;
+    line-height: 1.7;
+    max-width: 600px;
     margin-left: auto;
     margin-right: auto;
-    margin-bottom: var(--spacing-xl);
+    margin-top: var(--spacing-xs);
+    margin-bottom: 0;
+    
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2); 
+
+    animation: pulseBlueWhite 3s ease-in-out infinite alternate;
 }
 
-/* --- Seção do Formulário --- */
+@keyframes pulseBlueWhite {
+    from { 
+        color: var(--color-primary); 
+    }
+    to { 
+        color: #080808; 
+    }
+}
+
+/* Estilos para o container principal de conteúdo (formulário e resultados) */
+.container {
+    background-color: var(--color-surface); 
+    padding: var(--spacing-xl);
+    border-radius: var(--border-radius);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15); 
+    max-width: 700px;
+    margin: 0 auto var(--spacing-xl) auto;
+    border: 2px solid rgba(59, 130, 246, 0.15); 
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.container:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 35px rgba(30, 64, 175, 0.3); 
+    border-color: rgba(59, 130, 246, 0.5); 
+}
+
+.container::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle at center, rgba(59,130,246,0.05), transparent 70%);
+    animation: subtlePulse 6s infinite linear;
+    z-index: 0;
+}
+
+.container > * {
+    position: relative;
+    z-index: 1;
+}
+
+@keyframes subtlePulse {
+    0% {
+        transform: rotate(0deg) scale(1);
+    }
+    50% {
+        transform: rotate(180deg) scale(1.03);
+    }
+    100% {
+        transform: rotate(360deg) scale(1);
+    }
+}
+
+/* Estilos para a seção do formulário e seus componentes */
 .form-section {
     display: flex;
     flex-direction: column;
@@ -209,81 +292,192 @@ a:hover, a:focus {
     display: flex;
     flex-direction: column;
     gap: var(--spacing-sm);
+    position: relative; 
 }
 
 .input-group label {
     font-weight: 500;
     font-size: 0.9rem;
     color: var(--color-text-light);
+    padding-left: var(--spacing-xs); 
+    transition: color var(--transition-duration) ease; 
+}
+
+.input-group:focus-within label {
+    color: var(--color-primary); 
+    font-weight: 600; 
 }
 
 .form-section select,
-.form-section input[type="text"] {
+.form-section input[type="text"] { 
     width: 100%;
-    padding: var(--spacing-sm) var(--spacing-md);
+    padding: var(--spacing-md) var(--spacing-md); 
     border: 1px solid var(--color-border);
-    border-radius: var(--border-radius);
-    background-color: var(--color-background);
+    border-radius: var(--border-radius); 
+    background-color: var(--color-background); 
     color: var(--color-text-main);
-    font-size: 1rem;
-    transition: border-color var(--transition-duration) ease, box-shadow var(--transition-duration) ease;
-    appearance: none;
+    font-size: 0.95rem; 
+    font-family: var(--font-body); 
+    
+    transition: border-color var(--transition-duration) ease, 
+                box-shadow var(--transition-duration) ease,
+                background-color var(--transition-duration) ease;
+    
+    appearance: none; 
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}
+
+.form-section select {
     background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="%235f6368" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/></svg>');
     background-repeat: no-repeat;
     background-position: right var(--spacing-md) center;
     background-size: 1em;
-    padding-right: calc(var(--spacing-md) * 2 + 1em);
+    padding-right: calc(var(--spacing-md) * 2 + 1em); 
 }
 
-.form-section select:hover {
-    border-color: var(--color-primary);
+.form-section select:hover,
+.form-section input[type="text"]:hover {
+    border-color: var(--color-primary-dark); 
+    box-shadow: 0 0 5px rgba(74, 144, 226, 0.1); 
 }
 
-.form-section select:focus {
-    border-color: var(--color-primary);
-    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.25); /* Usando a cor primária RGBa */
-    outline: none;
-    background-color: var(--color-surface);
+.form-section select:focus,
+.form-section input[type="text"]:focus {
+    border-color: var(--color-primary); 
+    background-color: var(--color-surface); 
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.15), 
+                inset 0 1px 2px rgba(0, 0, 0, 0.075); 
+    outline: none; 
 }
 
-.cta-button, .reset-button {
-    padding: var(--spacing-md) var(--spacing-lg);
-    font-size: 1rem;
-    font-weight: 600;
-    font-family: var(--font-heading);
-    border-radius: var(--border-radius);
-    cursor: pointer;
-    transition: background-color var(--transition-duration) ease, transform var(--transition-duration) ease, box-shadow var(--transition-duration) ease;
-    text-align: center;
-    border: none;
+.form-section input[type="text"]::placeholder {
+    color: var(--color-text-light);
+    opacity: 0.7;
+}
+
+/* Estilos para botões (CTA e Reset) */
+.cta-button,
+.reset-button {
+  padding: var(--spacing-md) var(--spacing-lg);
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: var(--font-heading);
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  border: none;
+  text-align: center;
+  transition:
+    background 0.4s ease,
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+  position: relative;
+  overflow: hidden;
 }
 
 .cta-button {
-    background-color: var(--color-primary);
-    color: white;
-    box-shadow: 0 2px 5px rgba(74, 144, 226, 0.3); /* Usando a cor primária RGBa */
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+  color: #fff;
+  box-shadow: 0 4px 10px rgba(74, 144, 226, 0.4);
 }
-.cta-button:hover, .cta-button:focus {
-    background-color: var(--color-primary-dark);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 10px rgba(74, 144, 226, 0.4); /* Usando a cor primária RGBa */
+
+.cta-button:hover,
+.cta-button:focus {
+  background: linear-gradient(135deg, var(--color-primary-dark), var(--color-primary));
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 8px 20px rgba(74, 144, 226, 0.5);
+}
+
+@keyframes pulseGlow {
+  0% {
+    box-shadow: 0 0 0 rgba(74, 144, 226, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 15px rgba(74, 144, 226, 0.6);
+  }
+  100% {
+    box-shadow: 0 0 0 rgba(74, 144, 226, 0.4);
+  }
+}
+
+.cta-button:focus-visible {
+  animation: pulseGlow 1.8s infinite;
+  outline: none;
+}
+
+.reset-button {
+  background-color: transparent;
+  color: var(--color-primary);
+  border: 2px solid var(--color-primary);
+  transition:
+    color 0.3s ease,
+    background-color 0.3s ease,
+    transform 0.3s ease;
+}
+
+.reset-button:hover,
+.reset-button:focus {
+  background-color: var(--color-primary);
+  color: #fff;
+  transform: translateY(-2px);
 }
 
 .reset-button {
     background-color: transparent;
     color: var(--color-text-light);
-    border: 1px solid var(--color-border);
+    border: 2px solid var(--color-border);
+    padding: 0.5rem 1.2rem;
+    font-size: 1rem;
+    font-weight: 500;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
     display: inline-block;
     width: auto;
     align-self: center;
-}
-.reset-button:hover, .reset-button:focus {
-    background-color: var(--color-background);
-    border-color: var(--color-text-light);
-    color: var(--color-text-main);
+    position: relative;
+    overflow: hidden;
 }
 
-/* --- Área de Resultados --- */
+.reset-button:hover,
+.reset-button:focus {
+    background-color: var(--color-background);
+    border-color: #3b82f6; 
+    color: var(--color-text-main);
+    box-shadow: 0 0 8px rgba(59, 130, 246, 0.4);
+}
+
+.reset-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        120deg,
+        transparent,
+        rgba(59, 130, 246, 0.2),
+        transparent
+    );
+    transition: left 0.4s ease;
+    z-index: 0;
+}
+
+.reset-button:hover::before {
+    left: 100%;
+}
+
+.reset-button > * {
+    position: relative;
+    z-index: 1;
+}
+
+a.reset-button {
+    text-decoration: none;
+}
+
+/* Estilos para a área de exibição de resultados */
 .results-area {
     margin-top: var(--spacing-xl);
     padding-top: var(--spacing-lg);
@@ -324,46 +518,72 @@ a:hover, a:focus {
     font-style: normal;
 }
 
-/* --- Seção do Mapa --- */
+/* Estilos para a seção do mapa */
 .map-section {
-    /* width: 50%;  <-- Comentado ou removido para que use o width: 100% da regra geral acima */
-    /* ou defina um max-width como em .hero-section e .container */
-    max-width: 1000px; /* Exemplo de max-width para a seção do mapa */
-    margin-left: auto; /* Para centralizar se max-width for usado */
-    margin-right: auto; /* Para centralizar se max-width for usado */
+    max-width: 1000px;
+    margin-left: auto;
+    margin-right: auto;
     
-    /* Estilos visuais mantidos */
-    background-color: rgba(255, 255, 255, 0.5);
+    background: linear-gradient(to right, #e0f2ff, #f0f9ff); 
+    border: 2px solid #3b82f6; 
     border-radius: var(--border-radius);
-    box-shadow: 0 4px 15px var(--color-shadow);
-    backdrop-filter: blur(3px);
+    box-shadow: 0 8px 20px rgba(30, 64, 175, 0.2); 
+    backdrop-filter: blur(6px);
+    
     padding: var(--spacing-md);
     margin-top: var(--spacing-lg);
-    
-    /* Animação de aparição mantida */
+    text-align: center;
+
     opacity: 0;
-    transform: translateY(20px);
-    transition: opacity var(--transition-slow) ease-out, transform var(--transition-slow) ease-out;
-    text-align: center; /* Para centralizar o título do mapa e o container do mapa */
+    transform: translateY(30px);
+    animation: fadeInSection 1s ease-out forwards;
+}
+
+@keyframes fadeInSection {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .map-section.visible {
     opacity: 1;
     transform: translateY(0);
 }
-
-.map-section .map-title { /* Título H2 dentro da seção do mapa */
+.map-section .map-title {
     font-family: var(--font-heading);
-    font-size: 2.0rem; /* Reajustado para ser consistente com o h2 geral */
-    /* A cor e outros estilos de h2 já vêm da regra geral de h2 */
+    font-size: 2.4rem; 
+    color: #1e3a8a; 
     margin-bottom: var(--spacing-md);
+    text-align: center;
+    background: linear-gradient(to right, #3b82f6, #1e40af); 
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: fadeInUp 0.8s ease-out;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .folium-map-container {
     width: 100%;
-    max-width: 900px; /* Mantido, mas o pai .map-section agora controla melhor a largura geral */
+    max-width: 900px; 
     height: 450px;
-    margin: 0 auto; /* Centraliza o container do mapa dentro da .map-section */
+    margin: 0 auto; 
     border: 1px solid var(--color-border);
     border-radius: var(--border-radius);
     box-shadow: 0 2px 10px var(--color-shadow);
@@ -377,21 +597,21 @@ a:hover, a:focus {
     border: none;
 }
 
-/* --- Responsividade --- */
+/* Ajustes de responsividade para diferentes tamanhos de tela */
 @media (max-width: 768px) {
     body {
         padding: var(--spacing-lg) var(--spacing-sm);
     }
-    h1 { font-size: 2.2rem; } /* Ajustado para telas menores */
-    h2, .map-section .map-title { font-size: 1.75rem; } /* Ajustado para telas menores */
+    h1 { font-size: 2.2rem; } 
+    h2, .map-section .map-title { font-size: 1.75rem; } 
 
     .hero-section {
-        padding: var(--spacing-md); /* Ajuste de padding para hero */
-        max-width: 95%; /* Hero section mais larga em tablets */
+        padding: var(--spacing-md); 
+        max-width: 95%; 
     }
     .container {
         padding: var(--spacing-lg);
-        max-width: 95%; /* Container do formulário mais largo em tablets */
+        max-width: 95%; 
     }
     .form-section {
         gap: var(--spacing-md);
@@ -410,16 +630,14 @@ a:hover, a:focus {
         font-size: 1.1rem;
     }
 
-    /* AJUSTE PARA A SEÇÃO DO MAPA EM TELAS MENORES */
     .map-section {
-        width: 100%; /* Seção do mapa ocupa toda a largura disponível (respeitando padding do body) */
-        padding: var(--spacing-sm); /* Menos padding lateral na seção do mapa */
-        max-width: 100%; /* Remove o max-width anterior para ocupar a largura */
+        width: 100%; 
+        padding: var(--spacing-sm); 
+        max-width: 100%; 
     }
     
     .folium-map-container {
-        height: 350px; /* Altura do container do mapa em telas menores */
-        /* max-width: 100%;  Não precisa, já que o width é 100% do pai que já foi ajustado */
+        height: 350px; 
     }
 }
 
@@ -428,36 +646,32 @@ a:hover, a:focus {
     h2, .map-section .map-title { font-size: 1.5rem; }
 
     .hero-section, .container {
-        padding: var(--spacing-sm); /* Ainda menos padding */
+        padding: var(--spacing-sm); 
     }
-
-    /* .map-section já está 100% width do @media (max-width: 768px) */
     
     .folium-map-container {
         height: 300px;
     }
 }
 
-/* --- Estilo de Scrollbar --- */
+/* Estilização customizada da barra de rolagem */
 ::-webkit-scrollbar {
     width: 10px;
     height: 10px;
 }
 ::-webkit-scrollbar-track {
     background: var(--color-background);
-    /* border-radius: var(--border-radius-sm);  Se você tiver essa variável */
-    border-radius: 4px; /* Exemplo */
+    border-radius: 4px; 
 }
 ::-webkit-scrollbar-thumb {
     background-color: var(--color-primary);
-    /* border-radius: var(--border-radius-sm); */
-    border-radius: 4px; /* Exemplo */
+    border-radius: 4px; 
     border: 2px solid var(--color-background);
 }
 ::-webkit-scrollbar-thumb:hover {
     background-color: var(--color-primary-dark);
 }
-html { /* Para Firefox */
+html { 
     scrollbar-color: var(--color-primary) var(--color-background);
     scrollbar-width: thin;
 }

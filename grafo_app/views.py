@@ -1,3 +1,4 @@
+# Importações de bibliotecas e módulos necessários
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.conf import settings
@@ -6,17 +7,14 @@ import networkx as nx
 import folium
 import osmnx as ox
 import threading
-import traceback # Para imprimir o stack trace completo em caso de erro
+import traceback
 
-# Variável global para armazenar o grafo em memória e um lock para acesso seguro
+# Definição de variáveis globais, constantes e configurações da aplicação
 _G_real = None
 _graph_lock = threading.Lock()
 
-# Define o caminho para o arquivo de cache do grafo em disco
 GRAPH_CACHE_FILE = os.path.join(settings.MEDIA_ROOT, 'marica_road_network.graphml')
 
-
-# Dicionário com informações para os pop-ups
 pontos_turisticos_info = {
     "Lagoa de Araçatiba": {
         "descricao": "Principal cartão-postal do Centro de Maricá, com orla revitalizada, ciclovia e o famoso letreiro 'Eu Amo Maricá'. Ideal para caminhadas e lazer.",
@@ -34,13 +32,13 @@ pontos_turisticos_info = {
         "descricao": "Coração da cidade, com a Praça Orlando de Barros Pimentel, Igreja Matriz de Nossa Senhora do Amparo e diversas opções de comércio e serviços.",
         "imagem": "https://www.marica.rj.gov.br/wp-content/uploads/2022/01/marica.png"
     },
-    "Pedra do Elefante": { # Acesso via Mirante
+    "Pedra do Elefante": { 
         "descricao": "Ponto turístico com trilha desafiadora e vista deslumbrante da Restinga de Maricá e do litoral. O nome se deve ao formato de elefante de uma de suas pedras.",
         "imagem": "https://images.mnstatic.com/30/f0/30f0bafe4d806b0c6119e8bb02cc5022.jpg"
     },
     "Cachoeira do Espraiado": {
         "descricao": "Refúgio natural em meio à Mata Atlântica, com piscinas naturais e quedas d'água refrescantes. Ideal para ecoturismo e relaxamento.",
-        "imagem": "https://s0.wklcdn.com/image_41/1240357/7747435/4450707Master.jpg" # Exemplo, verificar
+        "imagem": "https://s0.wklcdn.com/image_41/1240357/7747435/4450707Master.jpg" 
     },
     "Canal da Ponta Negra": {
         "descricao": "Conexão entre a Lagoa de Maricá e o Oceano Atlântico. Um local tranquilo para pesca, remo e para apreciar a paisagem costeira.",
@@ -50,34 +48,33 @@ pontos_turisticos_info = {
         "descricao": "Ponto de referência marcante, visível de diversas partes da região de Inoã. Oferece trilhas e vistas panorâmicas da área rural e costeira de Maricá.",
         "imagem": "https://upload.wikimedia.org/wikipedia/commons/4/40/Pedra_de_Ino%C3%A3.jpg"
     },
-    # NOVOS PONTOS - ATUALIZE AS DESCRIÇÕES E IMAGENS
     "Praia da Barra de Maricá": {
         "descricao": "Popular encontro da lagoa com o mar, ideal para famílias e esportes aquáticos.",
-        "imagem": "https://s2-oglobo.glbimg.com/aBZn8w0pr-5Qoc7E6RwonYfaTa0=/0x0:4160x2340/888x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_da025474c0c44edd99332dddb09cabe8/internal_photos/bs/2025/o/8/ZSC32cT66y6wv7h3TRBQ/marica.jpeg" # Exemplo
+        "imagem": "https://s2-oglobo.glbimg.com/aBZn8w0pr-5Qoc7E6RwonYfaTa0=/0x0:4160x2340/888x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_da025474c0c44edd99332dddb09cabe8/internal_photos/bs/2025/o/8/ZSC32cT66y6wv7h3TRBQ/marica.jpeg" 
     },
     "Praia de Cordeirinho": {
         "descricao": "Praia tranquila, continuação da orla de Maricá, boa para descanso e caminhadas.",
-        "imagem": "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/05/d3/3c/ee/cordeirinho.jpg?w=1200&h=-1&s=1" # Exemplo
+        "imagem": "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/05/d3/3c/ee/cordeirinho.jpg?w=1200&h=-1&s=1" 
     },
     "Praia de Guaratiba": {
         "descricao": "Extensa praia na divisa com Saquarema, conhecida por sua beleza natural e ondas.",
-        "imagem": "https://casaruralmarica.com/wp-content/uploads/2024/05/praia-guaratiba-1.webp" # Exemplo
+        "imagem": "https://casaruralmarica.com/wp-content/uploads/2024/05/praia-guaratiba-1.webp" 
     },
     "Igreja Matriz N. S. do Amparo": {
         "descricao": "Marco histórico e religioso no centro de Maricá, datada do século XVIII.",
-        "imagem": "https://casaruralmarica.com/wp-content/uploads/2024/06/igreja-nossa-senhora-do-amparo-1024x702.jpg" # Exemplo
+        "imagem": "https://casaruralmarica.com/wp-content/uploads/2024/06/igreja-nossa-senhora-do-amparo-1024x702.jpg" 
     },
     "Rampa de Voo Livre de Maricá": {
         "descricao": "Localizada no Morro da Serrinha, oferece vistas espetaculares e é ponto de partida para voos de parapente.",
-        "imagem": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRDYjGEafG_z3kHMJAvoKYJNHma9lO6Ikwxww&s" # Exemplo
+        "imagem": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRDYjGEafG_z3kHMJAvoKYJNHma9lO6Ikwxww&s" 
     },
     "Orla de São José do Imbassaí": {
         "descricao": "Área de lazer revitalizada na Lagoa de São José, com ciclovia e espaços para convivência.",
-        "imagem": "https://leisecamarica.com.br/images/noticias/42972/29032022214103_C8EA3CEA-4.jpeg" # Exemplo
+        "imagem": "https://leisecamarica.com.br/images/noticias/42972/29032022214103_C8EA3CEA-4.jpeg" 
     },
     "Fazenda Pública Joaquín Piñero": {
         "descricao": "Antiga Fazenda Itaocaia, hoje um espaço público com atividades culturais, históricas e de lazer.",
-        "imagem": "https://images01.brasildefato.com.br/577023e5941d09ff28e89e54a3fd35e1.jpeg" # Exemplo
+        "imagem": "https://images01.brasildefato.com.br/577023e5941d09ff28e89e54a3fd35e1.jpeg" 
     }
 }
 
@@ -99,21 +96,20 @@ TRAFFIC_CONDITION_LABELS = {
 
 ROUTING_WEIGHT_FOR_DIAGNOSIS = "travel_time"
 
+# View principal para processar requisições, calcular rotas e renderizar a página
 def home(request):
-    # print(f"DEBUG: INÍCIO DO REQUEST. settings.MEDIA_ROOT = {settings.MEDIA_ROOT}")
-    
-    # Coordenadas atualizadas e novos pontos adicionados
+    # Inicialização de variáveis da view, lista de pontos turísticos e geográficos
     pontos_turisticos_geographic = {
         "Lagoa de Araçatiba": [-22.9265931804576, -42.8271107153453],
-        "Praia de Itaipuaçu": [-22.96913229065602, -42.979235341858285], # Coordenada CENTRAL da praia
+        "Praia de Itaipuaçu": [-22.9638, -42.9677], # Coordenada CENTRAL da praia
         "Farol de Ponta Negra": [-22.96047391794836, -42.692140476786996],
         "Centro de Maricá": [-22.914748273450563, -42.81959634222559],
-        "Pedra do Elefante": [-22.962941904630014, -43.02137400678821], # Coordenada do MIRANTE DE ITAIPUAÇU (acesso)
+        "Pedra do Elefante": [-22.9624, -43.0112], # Coordenada do MIRANTE DE ITAIPUAÇU (acesso)
         "Cachoeira do Espraiado": [-22.878143312750304, -42.697516445305816],
         "Canal da Ponta Negra": [-22.956461830728692, -42.69379147142791],
         "Pedra de Inoã": [-22.92717211701768, -42.91139602661133],
         # NOVOS PONTOS
-        "Praia da Barra de Maricá": [-22.961303067590116, -42.8191866701701],
+        "Praia da Barra de Maricá": [-22.9254, -42.7965],
         "Praia de Cordeirinho": [-22.957305056138484, -42.746470651659365],
         "Praia de Guaratiba": [-22.96015449066947, -42.79945768791294],
         "Igreja Matriz N. S. do Amparo": [-22.920063679881853, -42.81929740974707],
@@ -131,6 +127,7 @@ def home(request):
     
     calculate_route_and_show_map = False
 
+    # Processamento de requisições POST para seleção de rota
     if request.method == 'POST':
         form_origem = request.POST.get('origem_selecionada') 
         form_destino = request.POST.get('destino_selecionado')
@@ -151,6 +148,7 @@ def home(request):
             print(f"DEBUG: POST inválido. O:{form_origem}, D:{form_destino}, T:{form_traffic_condition}.")
         return redirect(request.path)  
 
+    # Lógica para lidar com o cálculo da rota após redirect (GET) ou em GET inicial
     if request.session.get('do_calculate_route_once', False):
         actual_selected_origem = request.session.get('calc_origem')
         actual_selected_destino = request.session.get('calc_destino')
@@ -159,9 +157,6 @@ def home(request):
         template_selected_origem = actual_selected_origem 
         template_selected_destino = actual_selected_destino
         
-        # Não delete 'do_calculate_route_once' aqui, delete apenas após o uso ou no GET inicial
-        # del request.session['do_calculate_route_once'] 
-        
         if actual_selected_origem and actual_selected_destino:
             calculate_route_and_show_map = True
             print(f"DEBUG: GET pós-POST. Rota: {actual_selected_origem} -> {actual_selected_destino}, Trânsito: {template_selected_traffic}")
@@ -169,16 +164,15 @@ def home(request):
             calculate_route_and_show_map = False
             template_selected_traffic = 'livre'
             print("DEBUG: GET pós-POST, mas dados da sessão ausentes/inválidos.")
-        # Marcar como usado para não recalcular em refresh simples do GET pós-POST
-        request.session['do_calculate_route_once'] = False # Ou del request.session['do_calculate_route_once']
+        request.session['do_calculate_route_once'] = False
     else:
         calculate_route_and_show_map = False
         template_selected_traffic = 'livre'
-        if 'calc_origem' in request.session: # Se não foi um POST válido, limpa
+        if 'calc_origem' in request.session: 
             request.session.pop('calc_origem', None)
             request.session.pop('calc_destino', None)
             request.session.pop('calc_traffic_condition', None)
-        request.session.pop('do_calculate_route_once', None) # Garante limpeza
+        request.session.pop('do_calculate_route_once', None) 
         print(f"DEBUG: GET inicial/F5 ou sem dados válidos. Trânsito padrão: {template_selected_traffic}")
     
     caminho_curto_text = "Selecione uma origem e um destino para calcular a rota."
@@ -190,6 +184,7 @@ def home(request):
     route = [] 
     G_current = None 
     
+    # Carregamento ou cache do grafo da malha viária (OSMnx)
     global _G_real
     with _graph_lock:
         if _G_real is None:
@@ -201,13 +196,11 @@ def home(request):
                 else:
                     print(f"DEBUG: Arquivo de cache do grafo não encontrado em {GRAPH_CACHE_FILE}. Baixando e criando...")
                     central_lat, central_lon = -22.9190, -42.8228 
-                    # Use o 'dist' que funcionou para você (ex: 25000 ou 30000) e 'retain_all=True'
-                    # Mantendo 20000 como no código original, mas ajuste se necessário.
-                    current_dist = 20000 # OU O VALOR MAIOR QUE VOCÊ USOU E FUNCIONOU (ex: 25000)
+                    current_dist = 20000 
                     print(f"DEBUG: Baixando grafo com dist={current_dist} e retain_all=True")
                     _G_real = ox.graph_from_point(
                         (central_lat, central_lon),
-                        dist=current_dist, # Ajuste este valor se você usou um maior que funcionou
+                        dist=current_dist, 
                         network_type="drive",
                         dist_type='network',
                         retain_all=True
@@ -231,6 +224,7 @@ def home(request):
         calculate_route_and_show_map = False 
         folium_map_html = None
 
+    # Cálculo da rota mais curta e geração do mapa Folium, se aplicável
     if G_current and calculate_route_and_show_map:
         print(f"DEBUG: Iniciando cálculo de rota (PESO: '{ROUTING_WEIGHT_FOR_DIAGNOSIS}', Trânsito: {template_selected_traffic})...")
         try:
@@ -281,7 +275,7 @@ def home(request):
                                         best_val_stat = val
                                         chosen_edge_for_stats = edge_attr_candidate
                                 if not chosen_edge_for_stats and multi_edge_data_iter:
-                                     chosen_edge_for_stats = multi_edge_data_iter[list(multi_edge_data_iter.keys())[0]]
+                                    chosen_edge_for_stats = multi_edge_data_iter[list(multi_edge_data_iter.keys())[0]]
                             else: 
                                 chosen_edge_for_stats = multi_edge_data_iter 
                         if chosen_edge_for_stats:
@@ -306,21 +300,19 @@ def home(request):
             print(f"DEBUG: Custo exibido: {custo_caminho}")
 
             if route:
-                # Definição do ponto inicial do mapa
                 map_center_coords = None
                 if actual_selected_origem and actual_selected_origem in pontos_turisticos_geographic:
                     map_center_coords = pontos_turisticos_geographic[actual_selected_origem]
-                elif G_current and G_current.nodes: # Fallback para o centro do grafo ou um ponto conhecido
-                     map_center_coords = pontos_turisticos_geographic.get("Centro de Maricá", [-22.9190, -42.8228])
+                elif G_current and G_current.nodes: 
+                    map_center_coords = pontos_turisticos_geographic.get("Centro de Maricá", [-22.9190, -42.8228])
 
                 m = folium.Map(location=map_center_coords, zoom_start=13, tiles="OpenStreetMap")
                 
                 for nome_ponto, coords_geo in pontos_turisticos_geographic.items():
                     info_popup = pontos_turisticos_info.get(nome_ponto, {"descricao": "Informação não disponível.", "imagem": ""})
-                    # HTML e CSS do popup (mantido como antes)
                     card_style = ("font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif; width: 280px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 10px rgba(0,0,0,0.08); overflow: hidden; background-color: #ffffff; border: 1px solid #495057; color: #212529;")
                     img_html_part = ""
-                    if info_popup.get("imagem"): # Usar .get() para segurança
+                    if info_popup.get("imagem"): 
                         img_style_str = "width: 100%; height: 150px; object-fit: cover; display: block;"
                         alt_text = nome_ponto.replace('"', '"'); img_src = info_popup["imagem"].replace('"', '"')
                         img_html_part = f'<img src="{img_src}" alt="{alt_text}" style="{img_style_str}">'
@@ -332,7 +324,7 @@ def home(request):
                     if info_popup.get("imagem"): iframe_total_height += 150
                     iframe_total_height += (8*2); iframe_total_width = 280+(8*2)+20
                     iframe = folium.IFrame(html=popup_html_str, width=iframe_total_width, height=iframe_total_height)
-                    popup = folium.Popup(iframe, max_width=iframe_total_width+20) # Ajuste max_width se necessário
+                    popup = folium.Popup(iframe, max_width=iframe_total_width+20) 
                     
                     icon_color = 'blue'; icon_symbol = 'info-sign'
                     if nome_ponto == template_selected_origem: icon_color = 'green'; icon_symbol = 'flag'
@@ -346,16 +338,13 @@ def home(request):
                         best_edge_for_polyline = None
                         if edge_data_options:
                             min_weight = float('inf')
-                            # Iterar sobre as chaves das arestas paralelas (geralmente 0, 1, ...)
                             for key_edge in edge_data_options:
                                 current_edge_attrs = edge_data_options[key_edge]
-                                # Se a rota foi por tempo, idealmente pegaríamos a aresta com menor tempo.
-                                # Para geometria, geralmente são iguais, mas pegar a de menor peso é mais seguro.
                                 current_weight = current_edge_attrs.get(ROUTING_WEIGHT_FOR_DIAGNOSIS, float('inf'))
                                 if current_weight < min_weight:
                                     min_weight = current_weight
                                     best_edge_for_polyline = current_edge_attrs
-                            if not best_edge_for_polyline: # Fallback se todas tiverem peso inf ou não houver peso
+                            if not best_edge_for_polyline: 
                                 best_edge_for_polyline = edge_data_options[list(edge_data_options.keys())[0]]
 
                         if best_edge_for_polyline and 'geometry' in best_edge_for_polyline:
@@ -397,6 +386,7 @@ def home(request):
             custo_caminho = "N/A"; folium_map_html = None; traceback.print_exc(); calculate_route_and_show_map = False
             print(f"EXCEÇÃO: Exception: {type(e).__name__} - {e}")
             
+    # Tratamento final para exibição de mensagens e mapa
     if not (G_current and calculate_route_and_show_map and folium_map_html):
         if G_current and calculate_route_and_show_map and not folium_map_html and \
            "Não foi possível encontrar uma rota" not in caminho_curto_text and \
@@ -405,6 +395,7 @@ def home(request):
             caminho_curto_text = f"Rota para {actual_selected_origem} a {actual_selected_destino} calculada, mas houve um erro ao gerar o mapa visual."
         if not folium_map_html: folium_map_html = None
 
+    # Preparação do contexto para renderização do template HTML
     context = {
         'caminho': caminho_curto_text,
         'custo': custo_caminho,
