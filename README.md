@@ -30,5 +30,5 @@ Para isso, o projeto é configurado para ser executado com Docker através de um
 4.  **Acesse a Aplicação:**
     Após os contêineres iniciarem completamente (o que pode incluir a execução automática de migrações e outras configurações definidas no seu Docker setup), a aplicação estará disponível no seu navegador,  em `http://localhost:8000/grafo/` .
 
-**Observação:** Fizemos em django por porque nosso projeto de praticas extensionistas é nesse framework e achamos que iria encaixar perfeitamente por conta da complexidade do projeto que une tanto backend quanto frontend:
+**Observação:** Fizemos em django por porque achamos que iria encaixar perfeitamente por conta da complexidade do projeto que une tanto backend quanto frontend:
 
