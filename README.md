@@ -15,7 +15,7 @@ Para isso, o projeto é configurado para ser executado com Docker através de um
 
 ##  Como o Guia Funciona na Prática
 
-O Guia Turístico Inteligente de Maricá opera através de uma combinação de coleta de dados geoespaciais, algoritmos de grafos e visualização interativa.
+O Maricá-vilhoso Guia turístico opera através de uma combinação de coleta de dados geoespaciais, algoritmos de grafos e visualização interativa.
 
 1.  **Construção da Malha Viária (Primeira Execução ou Cache Expirado):**
     * Ao iniciar, ou se o cache não existir, a aplicação primeiro busca os dados da malha viária de Maricá diretamente do OpenStreetMap (OSM) utilizando a biblioteca **OSMnx**.
