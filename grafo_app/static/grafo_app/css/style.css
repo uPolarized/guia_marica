@@ -686,44 +686,32 @@ html {
 }
 
 
-/* Insira este bloco no seu style.css, por exemplo, após os estilos de .form-section select:focus */
+
 
 /* --- Estilos para a Seção de Adição de Múltiplos Destinos --- */
 
 /* Contêiner para o select de parada e botão "Adicionar" */
 .add-destination-controls {
     display: flex;
-    align-items: center; /* Alinha verticalmente o select e o botão */
-    gap: var(--spacing-sm); /* Espaço entre o select e o botão */
+    align-items: center; 
+    gap: var(--spacing-sm); 
     margin-top: var(--spacing-xs); 
 }
 
 .add-destination-controls select#id_intermediate_destination_select {
-    flex-grow: 1; /* Faz o select ocupar o espaço disponível */
-    /* Herda os estilos de .form-section select. Se precisar de ajustes finos: */
-    /* padding-top: var(--spacing-xs); */
-    /* padding-bottom: var(--spacing-xs); */
-    /* font-size: 0.9rem; */
+    flex-grow: 1; 
+  
 }
 
-/* Botão "Adicionar" ao lado do select de paradas */
-/* No HTML, ele usa a classe .cta-button, então muitos estilos já são aplicados.
-   Podemos refinar o tamanho aqui se o .cta-button padrão for muito grande para este contexto. */
+
 .add-destination-controls button#add-destination-btn.cta-button {
     padding: var(--spacing-sm) var(--spacing-md); 
     font-size: 0.9rem;
     white-space: nowrap; 
     flex-shrink: 0; 
-    /* Se você quiser uma cor diferente para este botão "Adicionar" específico: */
-    /* background: linear-gradient(135deg, var(--color-secondary), #6b9b3a); /* Exemplo com verde */
-    /* box-shadow: 0 4px 10px rgba(141, 191, 76, 0.3); */
+    
 }
-/*
-.add-destination-controls button#add-destination-btn.cta-button:hover {
-    background: linear-gradient(135deg, #6b9b3a, var(--color-secondary));
-    box-shadow: 0 6px 15px rgba(141, 191, 76, 0.4);
-}
-*/
+
 
 /* Contêiner da lista de destinos/paradas selecionados */
 #selected-destinations-container {
@@ -777,7 +765,7 @@ html {
 }
 #selected-destinations-list li.placeholder-item:hover {
      background-color: transparent; 
-     border-color: var(--color-border); /* Sem mudança de borda no hover para placeholder */
+     border-color: var(--color-border); 
 }
 
 /* Botão de remover (X) dentro de cada item LI */
@@ -791,32 +779,13 @@ html {
     padding: 0 var(--spacing-xs);
     margin-left: var(--spacing-sm);
     line-height: 1; 
-    opacity: 0.6; /* Um pouco mais sutil no estado normal */
+    opacity: 0.6; 
     transition: opacity 0.2s ease, color 0.2s ease, transform 0.2s ease;
 }
 
 #selected-destinations-list li button.remove-destination-btn:hover {
-    color: #a83b38; /* Vermelho mais escuro no hover */
+    color: #a83b38; 
     opacity: 1;
-    transform: scale(1.1); /* Leve aumento no hover */
+    transform: scale(1.1); 
 }
 
-/* O botão 'Calcular Rota com Paradas' já usa .cta-button, que tem estilos definidos.
-   Se quiser um estilo diferente para ele, pode usar o seletor de atributo:
-*/
-/*
-button[name="calculate_custom_stops_route"].cta-button {
-    margin-top: var(--spacing-md);
-    background: linear-gradient(135deg, var(--color-success), var(--color-secondary));
-    box-shadow: 0 4px 10px rgba(92, 184, 92, 0.4);
-}
-
-button[name="calculate_custom_stops_route"].cta-button:hover,
-button[name="calculate_custom_stops_route"].cta-button:focus {
-    background: linear-gradient(135deg, var(--color-secondary), var(--color-success));
-    transform: translateY(-4px) scale(1.02);
-    box-shadow: 0 8px 20px rgba(92, 184, 92, 0.5);
-}
-*/
-
-/* --- FIM dos Estilos para a Seção de Adição de Múltiplos Destinos --- */
