@@ -26,7 +26,7 @@ O Maricá-vilhoso Guia turístico opera através de uma combinação de coleta d
 
 2.  **Interação do Usuário (Frontend):**
     * O usuário acessa a página web da aplicação.
-    * Ele seleciona um **Ponto de Origem** e um **Ponto de Destino** a partir de uma lista pré-definida de locais turísticos de Maricá.
+    * Ele seleciona um **Ponto de Origem**, **Podendo conter paradas** e um **Destino final** a partir de uma lista pré-definida de locais turísticos de Maricá.
     * Ao clicar em "Calcular Caminho", o formulário é enviado para o backend Django.
 
 3.  **Cálculo da Rota (Backend - Django):**
