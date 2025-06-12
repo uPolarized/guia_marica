@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Maricá-Vilhoso Guia Turístico</title>
     {% load static %}
+
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'grafo_app/images/apple-touch-icon.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'grafo_app/images/favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'grafo_app/images/favicon-16x16.png' %}">
+    <link rel="shortcut icon" href="{% static 'grafo_app/images/favicon.ico' %}">
     <link rel="stylesheet" href="{% static 'grafo_app/css/style.css' %}">
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
@@ -18,10 +23,11 @@
 <body>
     <div id="tsparticles-background"></div>
 
-    <div class="hero-section">
-        <h1>Maricá-Vilhoso Guia Turístico</h1>
-        <p class="subtitle">Descubra os melhores caminhos pelas belezas naturais!</p>
-    </div>
+   <div class="hero-section">
+    <h1>Maricá-Vilhoso Guia Turístico</h1>
+    <p class="subtitle">Descubra os melhores caminhos pelas belezas Maricaenses!</p>
+    <img src="{% static 'grafo_app/images/logo.png' %}" alt="Logo Maricá-vilhoso Guia Turístico" class="hero-logo">
+</div>
 
     <div class="container">
         <div class="form-section">
@@ -102,6 +108,9 @@
     </div>
 
     <script>
+        // Adiciona um "ouvinte" que espera todo o HTML da página ser carregado antes de executar o JavaScript.
+        // Isso garante que todos os elementos (botões, selects, etc.) já existam.
+
     document.addEventListener('DOMContentLoaded', () => {
         tsParticles.load("tsparticles-background", {
             fpsLimit: 60,
@@ -210,7 +219,7 @@
                 });
             }
         }
-
+        // Evento de clique para o botão "Adicionar".
         addDestinationBtn.addEventListener('click', (e) => {
             e.preventDefault();
             const selectedValue = intermediateDestinationSelect.value;
@@ -222,8 +231,10 @@
             intermediateDestinationSelect.value = "";
         });
 
+        // Renderiza a lista de destinos na carga inicial da página.
         renderSelectedDestinations();
 
+        // Evento de clique para o botão "Limpar Tudo".
         const resetButton = document.querySelector('.reset-button');
         if (resetButton) {
             resetButton.addEventListener('click', (e) => {

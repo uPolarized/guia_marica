@@ -82,6 +82,14 @@ body::before {
     top: 0; left: 0;
     z-index: -1;
 }
+.hero-logo {
+    width: 150px;
+    height: auto;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 1.5rem; /* Espaço ACIMA (aumentei um pouco para dar mais respiro) */
+}
 
 /* Controle de empilhamento para seções principais de conteúdo */
 .hero-section,
@@ -118,6 +126,7 @@ h1 {
     text-transform: uppercase;
     text-shadow: 0 0 8px rgba(74, 144, 226, 0.25); 
 }
+
 
 h2 {
     font-size: 2.0rem; 
