@@ -30,10 +30,11 @@ O Maricá-vilhoso Guia turístico opera através de uma combinação de coleta d
     * Ao clicar em "Calcular Caminho", o formulário é enviado para o backend Django.
 
 3.  **Cálculo da Rota (Backend - Django):**
-    * A view do Django recebe a solicitação com os pontos de origem (podendo ou não conter "paradas"), destino e a condição de trânsito.
+    * A view do Django recebe a solicitação com os pontos de origem (podendo ou não conter "paradas"), destino.
     * As coordenadas geográficas dos pontos turísticos selecionados são usadas para encontrar os nós mais próximos correspondentes no grafo da malha viária (utilizando funções do OSMnx).
     * Com os nós de origem e destino identificados no grafo, a biblioteca **NetworkX** é acionada. Utilizando o **Algoritmo de Dijkstra**, ela calcula o caminho mais curto entre esses dois nós.
-    * O "peso" considerado para o caminho mais curto pode ser o `travel_time` (tempo de viagem) ou `length` (distância). Se for por tempo, o multiplicador de trânsito selecionado pelo usuário é aplicado para ajustar as estimativas.
+    * O "peso" considerado para o caminho mais curto pode ser o `travel_time` (tempo de viagem) ou `length` (distância).
+    * Nós  utilizamos o OpenStreetMap como base de dados e o Folium como ferramenta para exibir essa base  e os resultados dos seus cálculos de forma interativa.
 
 4.  **Exibição dos Resultados (Frontend):**
     * A rota calculada (uma sequência de nós do grafo, que representa os segmentos de rua) e as informações de custo (tempo estimado, distância total) são enviadas de volta para o template HTML.
