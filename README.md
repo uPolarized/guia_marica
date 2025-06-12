@@ -27,7 +27,6 @@ O Maricá-vilhoso Guia turístico opera através de uma combinação de coleta d
 2.  **Interação do Usuário (Frontend):**
     * O usuário acessa a página web da aplicação.
     * Ele seleciona um **Ponto de Origem** e um **Ponto de Destino** a partir de uma lista pré-definida de locais turísticos de Maricá.
-    * Também escolhe uma **Condição de Trânsito** (livre, moderado, intenso), que influenciará o tempo estimado da viagem .
     * Ao clicar em "Calcular Caminho", o formulário é enviado para o backend Django.
 
 3.  **Cálculo da Rota (Backend - Django):**
@@ -59,7 +58,7 @@ Este ciclo permite que o usuário obtenha rotas otimizadas e informações turí
 2.  **Clone o Repositório:**
     ```powershell
     git clone https://github.com/uPolarized/guia_marica.git
-    não é necessário dar cd,  o projeto ja está na pasta raiz.
+    verificar se está na pasta raiz que contem o arquivo .yml.
     ```
 
 3.  **Construa as Imagens e Inicie os Contêineres:**
