@@ -5,25 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Maricá-Vilhoso Guia Turístico</title>
     {% load static %}
-    <link 
-        rel="stylesheet" 
-        href="{% static 'grafo_app/css/style.css' %}?v=2.0.5" 
-    >
-    <link 
-        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" 
-        rel="stylesheet"
-    >
-    <link 
-        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" 
-        rel="stylesheet"
-    >
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-        integrity="sha256-p4NxAoJBhγραφή_app/css/style.csskWAngz0QsNKTBNsMZU9ZXVMdHGWGLw NHSdkdnkVM="
-        crossorigin=""/>
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-            crossorigin=""></script>
-            
+    <link rel="stylesheet" href="{% static 'grafo_app/css/style.css' %}">
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" /> 
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
     <script src="https://cdn.jsdelivr.net/npm/tsparticles@2.12.0/tsparticles.bundle.min.js"></script>
 </head>
 <body>
@@ -36,222 +25,217 @@
 
     <div class="container">
         <div class="form-section">
-            <form method="POST" action="{% url 'home' %}"> 
+            <form method="POST" action="{% url 'home' %}" id="multi-stop-route-form">
                 {% csrf_token %}
                 <div class="input-group">
-                    <label for="id_origem_selecionada">Origem</label> 
-                    <select name="origem_selecionada" id="id_origem_selecionada"> 
+                    <label for="id_origem_selecionada">Origem</label>
+                    <select name="origem_selecionada" id="id_origem_selecionada" required>
                         <option value="" {% if not selected_origem %}selected{% endif %} disabled>Selecione a Origem</option>
                         {% for ponto in pontos_disponiveis %}
-                            <option 
-                                value="{{ ponto }}" 
-                                {% if ponto == selected_origem %}selected{% endif %}
-                            >
-                                {{ ponto }}
-                            </option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="input-group">
-                    <label for="id_destino_selecionado">Destino</label> 
-                    <select name="destino_selecionado" id="id_destino_selecionado">
-                        <option value="" {% if not selected_destino %}selected{% endif %} disabled>Selecione o Destino</option>
-                        {% for ponto in pontos_disponiveis %}
-                            <option 
-                                value="{{ ponto }}" 
-                                {% if ponto == selected_destino %}selected{% endif %}
-                            >
-                                {{ ponto }}
-                            </option>
+                            <option value="{{ ponto }}" {% if ponto == selected_origem %}selected{% endif %}>{{ ponto }}</option>
                         {% endfor %}
                     </select>
                 </div>
 
                 <div class="input-group">
-                    <label for="id_traffic_condition">Condição do Trânsito</label> 
-                    <select name="traffic_condition" id="id_traffic_condition">
-                        <option value="livre" {% if selected_traffic_condition == "livre" %}selected{% endif %}>Trânsito Livre (Ideal)</option>
-                        <option value="moderado" {% if selected_traffic_condition == "moderado" %}selected{% endif %}>Trânsito Moderado</option>
-                        <option value="intenso" {% if selected_traffic_condition == "intenso" %}selected{% endif %}>Trânsito Intenso</option>
-                    </select>
+                    <label for="id_intermediate_destination_select">Adicionar Parada / Destino Final</label>
+                    <div class="add-destination-controls">
+                        <select id="id_intermediate_destination_select">
+                            <option value="" disabled selected>Selecione um ponto para adicionar à rota...</option>
+                            {% for ponto in pontos_disponiveis %}
+                                <option value="{{ ponto }}">{{ ponto }}</option>
+                            {% endfor %}
+                        </select>
+                        <button type="button" id="add-destination-btn" class="cta-button">Adicionar</button>
+                    </div>
                 </div>
 
-                <button type="submit" class="cta-button">Calcular Caminho</button>
+                <div id="selected-destinations-container">
+                    <p>Paradas/Destinos na Rota (em ordem):</p>
+                    <ul id="selected-destinations-list"></ul>
+                </div>
+
+                <div id="hidden-destinations-inputs"></div>
+
+                <button type="submit" class="cta-button" name="calculate_custom_stops_route">Calcular Rota com Paradas</button>
+                <button type="submit" name="random_route_submit" class="cta-button" formnovalidate>Gerar Rota Aleatória (A-B)</button>
             </form>
+
             <p style="text-align: center; margin-top: 15px;">
-                <a href="{% url 'home' %}" class="reset-button">Limpar Seleção e Rota</a> 
+                <a href="{% url 'home' %}" class="reset-button">Limpar Tudo</a>
             </p>
         </div>
 
         <div class="results-area">
+            {% if display_info_about_random_route %}
+                <p style="text-align: center; color: var(--color-text-light); font-style: italic; margin-bottom: var(--spacing-sm);">
+                    Rota aleatória gerada pelo sistema.
+                </p>
+            {% endif %}
             <p class="route-summary">
                 <strong>
-                    {% if show_map_section and folium_map_html %}
-                        {{ caminho }}
-                    {% elif caminho %}
-                        <span class="{% if 'Erro' in caminho or 'Não foi possível' in caminho or 'Falha' in caminho %}error-message{% else %}no-results{% endif %}">{{ caminho }}</span>
+                    {% if caminho %}
+                        <span class="{% if 'Erro' in caminho or 'Falha' in caminho %}error-message{% else %}no-results{% endif %}">
+                            {{ caminho }}
+                        </span>
                     {% else %}
-                        <span class="no-results">Selecione os pontos de origem e destino para calcular o caminho.</span>
+                        <span class="no-results">Selecione a origem e adicione destinos/paradas para calcular a rota.</span>
                     {% endif %}
                 </strong>
             </p>
-            {% if show_map_section and folium_map_html and custo and custo != "" %} 
+            {% if custo %}
                 <p class="cost-summary"><strong>Custo Total Estimado:</strong> {{ custo }}</p>
-            {% endif %}
-            {% if DIAGNOSTIC_MODE %}
-                <p style="font-size: 0.8em; color: #aaa; text-align:center; margin-top:10px;">(Modo Diagnóstico Ativo: Rota por '{{ current_weight }}')</p>
             {% endif %}
         </div>
     </div>
     
-    <div class="map-section" id="map-section" style="display: none;">
-        {% if folium_map_html %} 
+    <div class="map-section" id="map-section">
+        {% if folium_map_html %}
             <h2 class="map-title">Visualização da Rota no Mapa</h2>
             <div class="folium-map-container">
                 {{ folium_map_html|safe }}
             </div>
+        {% elif show_map_section and not folium_map_html %}
+             <h2 class="map-title">Mapa Indisponível</h2>
+             <p class="error-message" style="text-align:center;">Não foi possível carregar os dados do mapa. Tente recarregar a página.</p>
         {% endif %}
     </div>
 
-    {{ show_map_section|json_script:"show_map_data_id" }}
-
     <script>
     document.addEventListener('DOMContentLoaded', () => {
+        tsParticles.load("tsparticles-background", {
+            fpsLimit: 60,
+            interactivity: {
+                events: {
+                    onHover: { enable: true, mode: "bubble" },
+                    resize: true,
+                },
+                modes: {
+                    bubble: { distance: 200, duration: 2, opacity: 1, size: 8 },
+                },
+            },
+            particles: {
+                color: { value: "#4A90E2" },
+                links: { enable: false },
+                move: {
+                    direction: "none",
+                    enable: true,
+                    outModes: { default: "bounce" },
+                    random: true,
+                    speed: 0.8,
+                    straight: false,
+                },
+                number: {
+                    density: { enable: true, area: 1000 },
+                    value: 50,
+                },
+                opacity: {
+                    value: { min: 0.1, max: 0.7 },
+                    animation: { enable: true, speed: 0.8, minimumValue: 0.1, sync: false },
+                },
+                shape: { type: "circle" },
+                size: { value: { min: 2, max: 4 } },
+                shadow: { enable: true, color: "#4A90E2", blur: 10 },
+            },
+            detectRetina: true,
+        });
+
         const mapSection = document.getElementById('map-section');
         const showMapDataElement = document.getElementById('show_map_data_id');
+        const triggerRouteCalcDataEl = document.getElementById('trigger_route_calculation_data');
+        const originSelect = document.getElementById('id_origem_selecionada');
+        const intermediateDestinationSelect = document.getElementById('id_intermediate_destination_select');
+        const addDestinationBtn = document.getElementById('add-destination-btn');
+        const selectedDestinationsListUl = document.getElementById('selected-destinations-list');
+        const hiddenDestinationsInputsDiv = document.getElementById('hidden-destinations-inputs');
+
         let shouldShowMap = false;
-        
-        if (showMapDataElement) {
-            try {
-                shouldShowMap = JSON.parse(showMapDataElement.textContent);
-            } catch (e) {
-                console.error("Erro ao parsear show_map_data_id:", e);
+        let wasRouteCalculatedOnLoad = false;
+
+        try {
+            if (showMapDataElement && showMapDataElement.textContent) {
+                shouldShowMap = JSON.parse(showMapDataElement.textContent.trim().toLowerCase());
             }
+            if (triggerRouteCalcDataEl && triggerRouteCalcDataEl.textContent) {
+                wasRouteCalculatedOnLoad = JSON.parse(triggerRouteCalcDataEl.textContent.trim().toLowerCase());
+            }
+        } catch (e) {
+            console.error("Erro ao parsear dados JSON de inicialização:", e);
         }
 
-        var leafletMapInstance = null; 
-
-        function findAndSetupMap() {
-            if (typeof L !== 'undefined' && L.Map && L.Map.instances && L.Map.instances.length > 0) {
-                leafletMapInstance = L.Map.instances[0]; 
-                console.log("Instância do mapa Leaflet encontrada e configurada:", leafletMapInstance);
-
-                window.addEventListener('resize', function() {
-                    if (leafletMapInstance && mapSection.style.display === 'block') {
-                        console.log("Redimensionando janela, invalidando tamanho do mapa.");
-                        setTimeout(() => {
-                            leafletMapInstance.invalidateSize();
-                        }, 200); 
-                    }
-                });
-
-                if (shouldShowMap && mapSection.style.display === 'block') {
-                    setTimeout(() => {
-                        console.log("Mapa exibido na carga, invalidando tamanho.");
-                        leafletMapInstance.invalidateSize();
-                    }, 250); 
-                }
-
-            } else if (document.querySelector('.folium-map')) { 
-                console.warn("Instância do mapa Leaflet não encontrada imediatamente. Tentando novamente em 500ms...");
-                setTimeout(findAndSetupMap, 500);
-            } else {
-                console.error("Não foi possível encontrar a div do mapa Folium ou a instância do Leaflet. O invalidateSize pode não funcionar.");
-            }
-        }
-
-        if (shouldShowMap) {
-            mapSection.style.display = 'block'; 
-            void mapSection.offsetWidth; 
-            mapSection.classList.add('visible');
-            
-            findAndSetupMap(); 
-
-            setTimeout(() => {
-                mapSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }, 150); 
-        } else {
+        if (!shouldShowMap) {
             mapSection.style.display = 'none';
-            mapSection.classList.remove('visible');
-        }
-        
-        if (window.tsParticles) {
-            tsParticles.load("tsparticles-background", {
-                fullScreen: {
-                    enable: true,
-                    zIndex: -1 
-                },
-                particles: {
-                    number: {
-                        value: 30, 
-                        density: {
-                            enable: true,
-                            area: 800 
-                        }
-                    },
-                    color: {
-                        value: "rgba(74, 144, 226, 0.25)" 
-                    },
-                    shape: {
-                        type: "circle" 
-                    },
-                    opacity: {
-                        value: {min: 0.1, max: 0.4}, 
-                        animation: { 
-                            enable: true,
-                            speed: 0.8,
-                            minimumValue: 0.05, 
-                            sync: false
-                        }
-                    },
-                    size: {
-                        value: {min: 5, max: 20}, 
-                        animation: { 
-                            enable: true,
-                            speed: 4,
-                            minimumValue: 3, 
-                            sync: false
-                        }
-                    },
-                    links: { 
-                        enable: false,
-                    },
-                    move: {
-                        enable: true,
-                        speed: 1.2, 
-                        direction: "top", 
-                        random: true, 
-                        straight: false, 
-                        outModes: { 
-                            default: "out" 
-                        },
-                        attract: { 
-                            enable: false
-                        }
-                    }
-                },
-                interactivity: { 
-                    detectsOn: "canvas",
-                    events: {
-                        onHover: {
-                            enable: false,
-                        },
-                        onClick: {
-                            enable: false,
-                        },
-                        resize: { enable: true } 
-                    }
-                },
-                detectRetina: true,
-            }).then(container => {
-                console.log("tsParticles carregado e iniciado.");
-            }).catch(error => {
-                console.error("Erro ao carregar tsParticles:", error);
-            });
         } else {
-            console.warn("Biblioteca tsParticles não carregada. Efeito de bolhas não será iniciado.");
+            mapSection.style.display = 'block';
+        }
+
+        if (wasRouteCalculatedOnLoad && shouldShowMap) {
+            mapSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            setTimeout(() => {
+                window.dispatchEvent(new Event('resize'));
+            }, 500);
+        }
+
+        let currentSelectedDestinations = JSON.parse('{{ selected_destinos_finais|default_if_none:"[]"|escapejs }}');
+
+        function renderSelectedDestinations() {
+            selectedDestinationsListUl.innerHTML = '';
+            hiddenDestinationsInputsDiv.innerHTML = '';
+            if (currentSelectedDestinations.length === 0) {
+                const li = document.createElement('li');
+                li.classList.add('placeholder-item');
+                li.textContent = 'Nenhuma parada adicionada.';
+                selectedDestinationsListUl.appendChild(li);
+            } else {
+                currentSelectedDestinations.forEach((dest, index) => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `<strong>${index + 1}.</strong> ${dest}`;
+                    const removeBtn = document.createElement('button');
+                    removeBtn.innerHTML = '&times;';
+                    removeBtn.className = 'remove-destination-btn';
+                    removeBtn.type = 'button';
+                    removeBtn.onclick = (e) => {
+                        e.preventDefault();
+                        currentSelectedDestinations.splice(index, 1);
+                        renderSelectedDestinations();
+                    };
+                    li.appendChild(removeBtn);
+                    selectedDestinationsListUl.appendChild(li);
+
+                    const hiddenInput = document.createElement('input');
+                    hiddenInput.type = 'hidden';
+                    hiddenInput.name = `destinos_intermediarios`;
+                    hiddenInput.value = dest;
+                    hiddenDestinationsInputsDiv.appendChild(hiddenInput);
+                });
+            }
+        }
+
+        addDestinationBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const selectedValue = intermediateDestinationSelect.value;
+            if (!selectedValue) { alert("Selecione um ponto para adicionar."); return; }
+            if (selectedValue === originSelect.value) { alert("Parada não pode ser igual à origem."); return; }
+            if (currentSelectedDestinations.includes(selectedValue)) { alert("Este ponto já foi adicionado."); return; }
+            currentSelectedDestinations.push(selectedValue);
+            renderSelectedDestinations();
+            intermediateDestinationSelect.value = "";
+        });
+
+        renderSelectedDestinations();
+
+        const resetButton = document.querySelector('.reset-button');
+        if (resetButton) {
+            resetButton.addEventListener('click', (e) => {
+                e.preventDefault();
+                window.location.href = "{% url 'home' %}"; 
+            });
         }
     });
     </script>
+    
+    {{ show_map_section|json_script:"show_map_data_id" }}
+    {{ trigger_route_calculation|json_script:"trigger_route_calculation_data" }}
+
 </body>
 </html>

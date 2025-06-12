@@ -1,6 +1,4 @@
-# Importações de bibliotecas e módulos necessários
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
 from django.conf import settings
 import os
 import networkx as nx
@@ -8,14 +6,18 @@ import folium
 import osmnx as ox
 import threading
 import traceback
+import random
 
-# Definição de variáveis globais, constantes e configurações da aplicação
+# Variável global para armazenar o grafo em memória e um lock para acesso seguro
 _G_real = None
 _graph_lock = threading.Lock()
 
+# Define o caminho para o arquivo de cache do grafo em disco
 GRAPH_CACHE_FILE = os.path.join(settings.MEDIA_ROOT, 'marica_road_network.graphml')
 
+# Dicionários de configuração e dados
 pontos_turisticos_info = {
+    # ... seu dicionário de informações permanece o mesmo
     "Lagoa de Araçatiba": {
         "descricao": "Principal cartão-postal do Centro de Maricá, com orla revitalizada, ciclovia e o famoso letreiro 'Eu Amo Maricá'. Ideal para caminhadas e lazer.",
         "imagem": "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/27/42/76/17/lagoa-de-aracatiba-marica.jpg?w=900&h=500&s=1"
@@ -64,7 +66,7 @@ pontos_turisticos_info = {
         "descricao": "Marco histórico e religioso no centro de Maricá, datada do século XVIII.",
         "imagem": "https://casaruralmarica.com/wp-content/uploads/2024/06/igreja-nossa-senhora-do-amparo-1024x702.jpg" 
     },
-    "Rampa de Voo Livre de Maricá": {
+    "Rampa de Voo Livre de Maricá": { 
         "descricao": "Localizada no Morro da Serrinha, oferece vistas espetaculares e é ponto de partida para voos de parapente.",
         "imagem": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRDYjGEafG_z3kHMJAvoKYJNHma9lO6Ikwxww&s" 
     },
@@ -77,335 +79,149 @@ pontos_turisticos_info = {
         "imagem": "https://images01.brasildefato.com.br/577023e5941d09ff28e89e54a3fd35e1.jpeg" 
     }
 }
-
 custom_hwy_speeds = {
     "residential": 20, "service": 15, "unclassified": 25, "tertiary": 30,
-    "secondary": 40, "primary": 50, "trunk": 60, "motorway": 90,
+    "secondary": 40, "primary": 50, "trunk": 60, "motorway": 90
 }
+# As variáveis de trânsito foram removidas
+# TRAFFIC_MULTIPLIERS = { ... }
+# TRAFFIC_CONDITION_LABELS = { ... }
 
-TRAFFIC_MULTIPLIERS = {
-    'livre': 1.0,
-    'moderado': 1.4,
-    'intenso': 2.0
-}
-TRAFFIC_CONDITION_LABELS = {
-    'livre': 'Trânsito Livre',
-    'moderado': 'Trânsito Moderado',
-    'intenso': 'Trânsito Intenso'
-}
-
-ROUTING_WEIGHT_FOR_DIAGNOSIS = "travel_time"
-
-# View principal para processar requisições, calcular rotas e renderizar a página
 def home(request):
-    # Inicialização de variáveis da view, lista de pontos turísticos e geográficos
     pontos_turisticos_geographic = {
-        "Lagoa de Araçatiba": [-22.9265931804576, -42.8271107153453],
-        "Praia de Itaipuaçu": [-22.9638, -42.9677], # Coordenada CENTRAL da praia
-        "Farol de Ponta Negra": [-22.96047391794836, -42.692140476786996],
-        "Centro de Maricá": [-22.914748273450563, -42.81959634222559],
-        "Pedra do Elefante": [-22.9624, -43.0112], # Coordenada do MIRANTE DE ITAIPUAÇU (acesso)
-        "Cachoeira do Espraiado": [-22.878143312750304, -42.697516445305816],
-        "Canal da Ponta Negra": [-22.956461830728692, -42.69379147142791],
-        "Pedra de Inoã": [-22.92717211701768, -42.91139602661133],
-        # NOVOS PONTOS
-        "Praia da Barra de Maricá": [-22.9254, -42.7965],
-        "Praia de Cordeirinho": [-22.957305056138484, -42.746470651659365],
-        "Praia de Guaratiba": [-22.96015449066947, -42.79945768791294],
-        "Igreja Matriz N. S. do Amparo": [-22.920063679881853, -42.81929740974707],
-        "Rampa de Voo Livre de Maricá": [-22.888071398541065, -42.86304991408861],
-        "Orla de São José do Imbassaí": [-22.935067975408934, -42.86929071583087],
+        # ... seu dicionário de coordenadas permanece o mesmo
+        "Lagoa de Araçatiba": [-22.9265931804576, -42.8271107153453], "Praia de Itaipuaçu": [-22.968583469841324, -42.99255733826831],
+        "Farol de Ponta Negra": [-22.96047391794836, -42.692140476786996], "Centro de Maricá": [-22.914748273450563, -42.81959634222559],
+        "Pedra do Elefante": [-22.962727227294796, -43.02199470325799], "Cachoeira do Espraiado": [-22.869735397599296, -42.689939603260385],
+        "Canal da Ponta Negra": [-22.956461830728692, -42.69379147142791], "Pedra de Inoã": [-22.92717211701768, -42.91139602661133],
+        "Praia da Barra de Maricá": [-22.9254, -42.7965], "Praia de Cordeirinho": [-22.957305056138484, -42.746470651659365],
+        "Praia de Guaratiba": [-22.96015449066947, -42.79945768791294], "Igreja Matriz N. S. do Amparo": [-22.920063679881853, -42.81929740974707],
+        "Rampa de Voo Livre de Maricá": [-22.888071398541065, -42.86304991408861], "Orla de São José do Imbassaí": [-22.935067975408934, -42.86929071583087],
         "Fazenda Pública Joaquín Piñero": [-22.89778111820182, -42.69607701483277],
     }
     pontos_disponiveis = sorted(list(pontos_turisticos_geographic.keys()))
-    
-    actual_selected_origem = None
-    actual_selected_destino = None
-    template_selected_origem = None
-    template_selected_destino = None
-    template_selected_traffic = 'livre'
-    
-    calculate_route_and_show_map = False
 
-    # Processamento de requisições POST para seleção de rota
-    if request.method == 'POST':
-        form_origem = request.POST.get('origem_selecionada') 
-        form_destino = request.POST.get('destino_selecionado')
-        form_traffic_condition = request.POST.get('traffic_condition', 'livre')
+    if request.method == 'GET' and not request.session.get('do_calculate_route_once'):
+        for key in list(request.session.keys()):
+            if not key.startswith('_'):
+                del request.session[key]
 
-        if form_origem and form_destino and form_origem in pontos_disponiveis and \
-           form_destino in pontos_disponiveis and form_origem != form_destino:
-            request.session['calc_origem'] = form_origem
-            request.session['calc_destino'] = form_destino
-            request.session['calc_traffic_condition'] = form_traffic_condition
-            request.session['do_calculate_route_once'] = True
-            print(f"DEBUG: POST. O:{form_origem}, D:{form_destino}, T:{form_traffic_condition}. Salvo na sessão.")
-        else:
-            request.session.pop('calc_origem', None)
-            request.session.pop('calc_destino', None)
-            request.session.pop('calc_traffic_condition', None)
-            request.session.pop('do_calculate_route_once', None)
-            print(f"DEBUG: POST inválido. O:{form_origem}, D:{form_destino}, T:{form_traffic_condition}.")
-        return redirect(request.path)  
-
-    # Lógica para lidar com o cálculo da rota após redirect (GET) ou em GET inicial
-    if request.session.get('do_calculate_route_once', False):
-        actual_selected_origem = request.session.get('calc_origem')
-        actual_selected_destino = request.session.get('calc_destino')
-        template_selected_traffic = request.session.get('calc_traffic_condition', 'livre')
-        
-        template_selected_origem = actual_selected_origem 
-        template_selected_destino = actual_selected_destino
-        
-        if actual_selected_origem and actual_selected_destino:
-            calculate_route_and_show_map = True
-            print(f"DEBUG: GET pós-POST. Rota: {actual_selected_origem} -> {actual_selected_destino}, Trânsito: {template_selected_traffic}")
-        else:
-            calculate_route_and_show_map = False
-            template_selected_traffic = 'livre'
-            print("DEBUG: GET pós-POST, mas dados da sessão ausentes/inválidos.")
-        request.session['do_calculate_route_once'] = False
-    else:
-        calculate_route_and_show_map = False
-        template_selected_traffic = 'livre'
-        if 'calc_origem' in request.session: 
-            request.session.pop('calc_origem', None)
-            request.session.pop('calc_destino', None)
-            request.session.pop('calc_traffic_condition', None)
-        request.session.pop('do_calculate_route_once', None) 
-        print(f"DEBUG: GET inicial/F5 ou sem dados válidos. Trânsito padrão: {template_selected_traffic}")
-    
-    caminho_curto_text = "Selecione uma origem e um destino para calcular a rota."
-    if calculate_route_and_show_map and actual_selected_origem and actual_selected_destino:
-        caminho_curto_text = f"Calculando rota entre {actual_selected_origem} e {actual_selected_destino}..."
-    
-    custo_caminho = "" 
-    folium_map_html = None
-    route = [] 
-    G_current = None 
-    
-    # Carregamento ou cache do grafo da malha viária (OSMnx)
     global _G_real
     with _graph_lock:
         if _G_real is None:
-            print("DEBUG: Carregando grafo OSMnx...")
             try:
                 if os.path.exists(GRAPH_CACHE_FILE):
                     _G_real = ox.load_graphml(filepath=GRAPH_CACHE_FILE)
-                    print(f"DEBUG: Grafo OSMnx carregado do cache: {GRAPH_CACHE_FILE}")
                 else:
-                    print(f"DEBUG: Arquivo de cache do grafo não encontrado em {GRAPH_CACHE_FILE}. Baixando e criando...")
-                    central_lat, central_lon = -22.9190, -42.8228 
-                    current_dist = 20000 
-                    print(f"DEBUG: Baixando grafo com dist={current_dist} e retain_all=True")
-                    _G_real = ox.graph_from_point(
-                        (central_lat, central_lon),
-                        dist=current_dist, 
-                        network_type="drive",
-                        dist_type='network',
-                        retain_all=True
-                    )
-                    media_root_path = getattr(settings, 'MEDIA_ROOT', None)
-                    if media_root_path:
-                        if not os.path.exists(media_root_path): os.makedirs(media_root_path, exist_ok=True)
-                        ox.save_graphml(_G_real, filepath=GRAPH_CACHE_FILE)
-                        print(f"DEBUG: Grafo OSMnx salvo em cache: {GRAPH_CACHE_FILE}")
-                _G_real = ox.add_edge_speeds(_G_real, hwy_speeds=custom_hwy_speeds) 
+                    central_lat, central_lon = pontos_turisticos_geographic["Centro de Maricá"]
+                    _G_real = ox.graph_from_point((central_lat, central_lon), dist=25000, network_type="drive", dist_type='network', retain_all=True, truncate_by_edge=True)
+                    ox.save_graphml(_G_real, filepath=GRAPH_CACHE_FILE)
+                _G_real = ox.add_edge_speeds(_G_real, hwy_speeds=custom_hwy_speeds)
                 _G_real = ox.add_edge_travel_times(_G_real)
-                print("DEBUG: Grafo OSMnx pronto (velocidades e tempos de viagem adicionados).")
             except Exception as e:
-                _G_real = None; traceback.print_exc()
-                caminho_curto_text = f"Erro crítico ao carregar dados do mapa: {type(e).__name__}."
-        G_current = _G_real
+                _G_real = None
+                traceback.print_exc()
+                return render(request, 'grafo_app/index.html', {'caminho': f"Erro crítico ao carregar mapa: {e}", 'pontos_disponiveis': pontos_disponiveis})
 
-    if not G_current:
-        if "Erro crítico ao carregar dados do mapa" not in caminho_curto_text:
-            caminho_curto_text = "Falha ao carregar o mapa base. Tente novamente mais tarde."
-        calculate_route_and_show_map = False 
-        folium_map_html = None
+    G_current = _G_real
 
-    # Cálculo da rota mais curta e geração do mapa Folium, se aplicável
-    if G_current and calculate_route_and_show_map:
-        print(f"DEBUG: Iniciando cálculo de rota (PESO: '{ROUTING_WEIGHT_FOR_DIAGNOSIS}', Trânsito: {template_selected_traffic})...")
-        try:
-            print(f"DEBUG: SELEÇÃO DO FORMULÁRIO (da sessão): Origem='{request.session.get('calc_origem', 'N/A')}', Destino='{request.session.get('calc_destino', 'N/A')}'")
-            print(f"DEBUG: USANDO PARA ROTA (variáveis atuais): actual_selected_origem='{actual_selected_origem}', actual_selected_destino='{actual_selected_destino}'")
+    if request.method == 'POST':
+        # Linha que pegava a condição de trânsito foi REMOVIDA
+        if 'calculate_custom_stops_route' in request.POST:
+            origem = request.POST.get('origem_selecionada')
+            destinos = request.POST.getlist('destinos_intermediarios')
+            if origem and destinos:
+                request.session['calc_origem'] = origem
+                request.session['calc_destinos'] = destinos
+                request.session['calc_route_type'] = 'multi_stop'
+                request.session['do_calculate_route_once'] = True
+        elif 'random_route_submit' in request.POST:
+            if len(pontos_disponiveis) >= 2:
+                origem, destino = random.sample(pontos_disponiveis, 2)
+                request.session['calc_origem'] = origem
+                request.session['calc_destinos'] = [destino]
+                request.session['calc_route_type'] = 'random'
+                request.session['do_calculate_route_once'] = True
+        return redirect(request.path)
 
-            if not actual_selected_origem or not actual_selected_destino:
-                raise ValueError("Origem ou destino não definidos para cálculo da rota.")
+    caminho_curto_text, custo_caminho, folium_map_html = "", "", None
+    show_map_section, route_calculation_was_performed = False, False
 
-            if actual_selected_origem not in pontos_turisticos_geographic or actual_selected_destino not in pontos_turisticos_geographic:
-                raise ValueError(f"Origem '{actual_selected_origem}' ou Destino '{actual_selected_destino}' não encontrado no dicionário de coordenadas.")
+    if request.session.get('do_calculate_route_once'):
+        route_calculation_was_performed = True
+        origem_nome = request.session.get('calc_origem')
+        destinos_nomes = request.session.get('calc_destinos', [])
+        # Linha que pegava o trânsito da sessão foi REMOVIDA
+        request.session['do_calculate_route_once'] = False
 
-            origem_coords = pontos_turisticos_geographic[actual_selected_origem]
-            destino_coords_input = pontos_turisticos_geographic[actual_selected_destino]
+        if origem_nome and destinos_nomes and G_current:
+            try:
+                points_sequence_names = [origem_nome] + destinos_nomes
+                full_route_nodes = []
+                total_travel_time, total_length_meters = 0, 0
 
-            print(f"DEBUG: Coordenadas de ORIGEM ({actual_selected_origem}) do dicionário: {origem_coords}")
-            print(f"DEBUG: Coordenadas de DESTINO ({actual_selected_destino}) do dicionário: {destino_coords_input}")
-
-            origem_node_id = ox.distance.nearest_nodes(G_current, origem_coords[1], origem_coords[0])
-            destino_node_id = ox.distance.nearest_nodes(G_current, destino_coords_input[1], destino_coords_input[0])
-            
-            origem_snapped_coords = (G_current.nodes[origem_node_id]['y'], G_current.nodes[origem_node_id]['x'])
-            destino_snapped_coords = (G_current.nodes[destino_node_id]['y'], G_current.nodes[destino_node_id]['x'])
-            print(f"DEBUG: Nó de ORIGEM ({actual_selected_origem}) snapado para: Lat {origem_snapped_coords[0]}, Lon {origem_snapped_coords[1]}")
-            print(f"DEBUG: Nó de DESTINO ({actual_selected_destino}) snapado para: Lat {destino_snapped_coords[0]}, Lon {destino_snapped_coords[1]}")
-            
-            calculated_metric_value = 0
-            if origem_node_id == destino_node_id:
-                caminho_curto_text = f"Origem ({actual_selected_origem}) e destino ({actual_selected_destino}) são o mesmo."
-                route = [origem_node_id]; custo_caminho = "0 minutos"
-            else:
-                route = nx.shortest_path(G_current, origem_node_id, destino_node_id, weight=ROUTING_WEIGHT_FOR_DIAGNOSIS)
-                calculated_metric_value = nx.shortest_path_length(G_current, origem_node_id, destino_node_id, weight=ROUTING_WEIGHT_FOR_DIAGNOSIS)
-                
-                base_travel_time_seconds = 0
-                actual_length_for_route_meters = 0
-                if route and len(route) > 1:
-                    for u_node_iter, v_node_iter in zip(route[:-1], route[1:]):
-                        multi_edge_data_iter = G_current.get_edge_data(u_node_iter, v_node_iter)
-                        chosen_edge_for_stats = None
-                        if multi_edge_data_iter:
-                            best_val_stat = float('inf')
-                            if isinstance(G_current, nx.MultiDiGraph):
-                                for key_edge_iter in multi_edge_data_iter:
-                                    edge_attr_candidate = multi_edge_data_iter[key_edge_iter]
-                                    val = edge_attr_candidate.get(ROUTING_WEIGHT_FOR_DIAGNOSIS, float('inf'))
-                                    if val < best_val_stat:
-                                        best_val_stat = val
-                                        chosen_edge_for_stats = edge_attr_candidate
-                                if not chosen_edge_for_stats and multi_edge_data_iter:
-                                    chosen_edge_for_stats = multi_edge_data_iter[list(multi_edge_data_iter.keys())[0]]
-                            else: 
-                                chosen_edge_for_stats = multi_edge_data_iter 
-                        if chosen_edge_for_stats:
-                            base_travel_time_seconds += chosen_edge_for_stats.get('travel_time', 0)
-                            actual_length_for_route_meters += chosen_edge_for_stats.get('length', 0)
-                
-                current_traffic_multiplier = TRAFFIC_MULTIPLIERS.get(template_selected_traffic, 1.0)
-                condition_label_for_display = TRAFFIC_CONDITION_LABELS.get(template_selected_traffic, "Condição Desconhecida")
-
-                if ROUTING_WEIGHT_FOR_DIAGNOSIS == "length":
-                    final_display_time_seconds = base_travel_time_seconds * current_traffic_multiplier
-                    caminho_curto_text = f"Rota por DISTÂNCIA entre {actual_selected_origem} e {actual_selected_destino}"
-                    custo_caminho = f"{round(final_display_time_seconds / 60, 1)} minutos (estimado com {condition_label_for_display}, para rota de {calculated_metric_value/1000:.2f} km)"
-                else: 
-                    final_display_time_seconds_for_time_route = calculated_metric_value * current_traffic_multiplier
-                    caminho_curto_text = f"Rota por TEMPO entre {actual_selected_origem} e {actual_selected_destino}"
-                    custo_caminho = f"{round(final_display_time_seconds_for_time_route / 60, 1)} minutos (estimado com {condition_label_for_display}, para rota de {actual_length_for_route_meters/1000:.2f} km)"
-
-            print(f"DEBUG: Rota (nós): {route if route else 'Nenhuma rota encontrada ou mesmo nó'}")
-            print(f"DEBUG: Custo calculado ({ROUTING_WEIGHT_FOR_DIAGNOSIS}): {calculated_metric_value}")
-            print(f"DEBUG: Texto do caminho: {caminho_curto_text}")
-            print(f"DEBUG: Custo exibido: {custo_caminho}")
-
-            if route:
-                map_center_coords = None
-                if actual_selected_origem and actual_selected_origem in pontos_turisticos_geographic:
-                    map_center_coords = pontos_turisticos_geographic[actual_selected_origem]
-                elif G_current and G_current.nodes: 
-                    map_center_coords = pontos_turisticos_geographic.get("Centro de Maricá", [-22.9190, -42.8228])
-
-                m = folium.Map(location=map_center_coords, zoom_start=13, tiles="OpenStreetMap")
-                
-                for nome_ponto, coords_geo in pontos_turisticos_geographic.items():
-                    info_popup = pontos_turisticos_info.get(nome_ponto, {"descricao": "Informação não disponível.", "imagem": ""})
-                    card_style = ("font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif; width: 280px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 10px rgba(0,0,0,0.08); overflow: hidden; background-color: #ffffff; border: 1px solid #495057; color: #212529;")
-                    img_html_part = ""
-                    if info_popup.get("imagem"): 
-                        img_style_str = "width: 100%; height: 150px; object-fit: cover; display: block;"
-                        alt_text = nome_ponto.replace('"', '"'); img_src = info_popup["imagem"].replace('"', '"')
-                        img_html_part = f'<img src="{img_src}" alt="{alt_text}" style="{img_style_str}">'
-                    content_style = "padding: 16px;"
-                    title_style = "margin-top: 0; margin-bottom: 10px; font-size: 1.2em; font-weight: 600; color: #212529; text-align: left; line-height: 1.35;"
-                    desc_style = ("font-size: 0.9em; color: #495057; line-height: 1.6; text-align: left; margin-bottom: 0; max-height: 80px; overflow-y: auto; word-break: break-word; -webkit-hyphens: auto; -ms-hyphens: auto; hyphens: auto;")
-                    popup_html_str = f"""<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><style>body{{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen,Ubuntu,Cantarell,"Open Sans","Helvetica Neue",sans-serif;background-color:#212529;color:#e9ecef;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;padding:8px;}}.popup-card-description-class::-webkit-scrollbar{{width:6px;}}.popup-card-description-class::-webkit-scrollbar-thumb{{background-color:#5c6773;border-radius:10px;}}.popup-card-description-class::-webkit-scrollbar-track{{background-color:#343a40;}}</style></head><body><div style="{card_style}">{img_html_part}<div style="{content_style}"><h4 style="{title_style}">{nome_ponto}</h4><p class="popup-card-description-class" style="{desc_style}">{info_popup.get("descricao", "N/A")}</p></div></div></body></html>"""
-                    popup_content_main_height = 20+30+80+32; iframe_total_height = popup_content_main_height
-                    if info_popup.get("imagem"): iframe_total_height += 150
-                    iframe_total_height += (8*2); iframe_total_width = 280+(8*2)+20
-                    iframe = folium.IFrame(html=popup_html_str, width=iframe_total_width, height=iframe_total_height)
-                    popup = folium.Popup(iframe, max_width=iframe_total_width+20) 
+                for i in range(len(points_sequence_names) - 1):
+                    seg_orig_name, seg_dest_name = points_sequence_names[i], points_sequence_names[i+1]
+                    orig_coords, dest_coords = pontos_turisticos_geographic[seg_orig_name], pontos_turisticos_geographic[seg_dest_name]
+                    orig_node, dest_node = ox.distance.nearest_nodes(G_current, orig_coords[1], orig_coords[0]), ox.distance.nearest_nodes(G_current, dest_coords[1], dest_coords[0])
                     
-                    icon_color = 'blue'; icon_symbol = 'info-sign'
-                    if nome_ponto == template_selected_origem: icon_color = 'green'; icon_symbol = 'flag'
-                    elif nome_ponto == template_selected_destino: icon_color = 'red'; icon_symbol = 'screenshot'
-                    folium.Marker(location=coords_geo, popup=popup, icon=folium.Icon(color=icon_color, icon=icon_symbol)).add_to(m)
-                
-                route_points_for_polyline = []
-                if len(route) > 1:
-                    for u_node_poly, v_node_poly in zip(route[:-1], route[1:]):
-                        edge_data_options = G_current.get_edge_data(u_node_poly, v_node_poly)
-                        best_edge_for_polyline = None
-                        if edge_data_options:
-                            min_weight = float('inf')
-                            for key_edge in edge_data_options:
-                                current_edge_attrs = edge_data_options[key_edge]
-                                current_weight = current_edge_attrs.get(ROUTING_WEIGHT_FOR_DIAGNOSIS, float('inf'))
-                                if current_weight < min_weight:
-                                    min_weight = current_weight
-                                    best_edge_for_polyline = current_edge_attrs
-                            if not best_edge_for_polyline: 
-                                best_edge_for_polyline = edge_data_options[list(edge_data_options.keys())[0]]
+                    if orig_node == dest_node: continue
+                    
+                    # A lógica de criar um grafo com trânsito (G_with_traffic) foi REMOVIDA.
+                    # Usamos diretamente o G_current, que considera a rota ideal.
+                    segment_route = nx.shortest_path(G_current, orig_node, dest_node, weight='travel_time')
+                    total_length_meters += nx.shortest_path_length(G_current, orig_node, dest_node, weight='length')
+                    total_travel_time += nx.shortest_path_length(G_current, orig_node, dest_node, weight='travel_time')
+                    full_route_nodes.extend(segment_route[1:] if full_route_nodes else segment_route)
 
-                        if best_edge_for_polyline and 'geometry' in best_edge_for_polyline:
-                            xs,ys = best_edge_for_polyline['geometry'].xy; route_points_for_polyline.extend(list(zip(ys,xs)))
-                        elif best_edge_for_polyline: 
-                            if not route_points_for_polyline or route_points_for_polyline[-1]!=[G_current.nodes[u_node_poly]['y'],G_current.nodes[u_node_poly]['x']]: route_points_for_polyline.append([G_current.nodes[u_node_poly]['y'],G_current.nodes[u_node_poly]['x']])
-                            route_points_for_polyline.append([G_current.nodes[v_node_poly]['y'],G_current.nodes[v_node_poly]['x']])
-                        else: 
-                            if not route_points_for_polyline or route_points_for_polyline[-1]!=[G_current.nodes[u_node_poly]['y'],G_current.nodes[u_node_poly]['x']]: route_points_for_polyline.append([G_current.nodes[u_node_poly]['y'],G_current.nodes[u_node_poly]['x']])
-                            route_points_for_polyline.append([G_current.nodes[v_node_poly]['y'],G_current.nodes[v_node_poly]['x']])
+                if full_route_nodes:
+                    show_map_section = True
+                    caminho_curto_text = f"Rota Calculada: {' → '.join(points_sequence_names)}"
+                    # MENSAGEM DE CUSTO ATUALIZADA:
+                    custo_caminho = f"{round(total_travel_time / 60, 1)} min ({total_length_meters/1000:.2f} km)"
+                    
+                    m = folium.Map(tiles="OpenStreetMap")
+                    
+                    for nome_ponto, coords_geo in pontos_turisticos_geographic.items():
+                        info_p = pontos_turisticos_info.get(nome_ponto, {})
+                        popup_html = f"""<div style="width:250px;text-align:center;"><h4>{nome_ponto}</h4><img src='{info_p.get("imagem", "")}' style='width:100%;'/><p>{info_p.get("descricao", "")}</p></div>"""
+                        iframe = folium.IFrame(html=popup_html, width=280, height=250)
+                        popup = folium.Popup(iframe)
+                        icon_color = 'blue'
+                        if nome_ponto == origem_nome: icon_color = 'green'
+                        elif nome_ponto == destinos_nomes[-1]: icon_color = 'red'
+                        elif nome_ponto in destinos_nomes: icon_color = 'orange'
+                        folium.Marker(location=coords_geo, popup=popup, icon=folium.Icon(color=icon_color)).add_to(m)
 
-                final_route_points_for_polyline = []
-                if route_points_for_polyline and len(route_points_for_polyline) > 0:
-                    final_route_points_for_polyline.append(route_points_for_polyline[0])
-                    for i_poly_dedup in range(1,len(route_points_for_polyline)):
-                        if final_route_points_for_polyline[-1]!=route_points_for_polyline[i_poly_dedup]: final_route_points_for_polyline.append(route_points_for_polyline[i_poly_dedup])
-                
-                if final_route_points_for_polyline and len(final_route_points_for_polyline)>1:
-                    tooltip_text = f"Rota ({ROUTING_WEIGHT_FOR_DIAGNOSIS}): {actual_selected_origem} para {actual_selected_destino} <br>{custo_caminho}"
-                    folium.PolyLine(locations=final_route_points_for_polyline, color='red', weight=5, opacity=0.7, tooltip=tooltip_text).add_to(m)
-                
-                folium.LayerControl().add_to(m)
-                folium_map_html = m._repr_html_()
-                print("DEBUG: Mapa Folium gerado.")
-            else:
-                folium_map_html = None
-                print("DEBUG: Nenhuma rota para exibir no mapa (rota vazia ou nós idênticos).")
-        
-        except nx.NetworkXNoPath:
-            caminho_curto_text = f"Não foi possível encontrar uma rota ({ROUTING_WEIGHT_FOR_DIAGNOSIS}) entre '{actual_selected_origem}' e '{actual_selected_destino}'."
-            custo_caminho = "N/A"; folium_map_html = None; calculate_route_and_show_map = False
-            print(f"EXCEÇÃO: nx.NetworkXNoPath para {actual_selected_origem} -> {actual_selected_destino}")
-        except ValueError as e: 
-            caminho_curto_text = f"Erro ao processar dados para '{actual_selected_origem}' ou '{actual_selected_destino}' (ValueError: {e})."
-            custo_caminho = "N/A"; folium_map_html = None; traceback.print_exc(); calculate_route_and_show_map = False
-            print(f"EXCEÇÃO: ValueError: {e}")
-        except Exception as e:
-            caminho_curto_text = f"Ocorreu um erro inesperado ({type(e).__name__}) ao calcular rota."
-            custo_caminho = "N/A"; folium_map_html = None; traceback.print_exc(); calculate_route_and_show_map = False
-            print(f"EXCEÇÃO: Exception: {type(e).__name__} - {e}")
-            
-    # Tratamento final para exibição de mensagens e mapa
-    if not (G_current and calculate_route_and_show_map and folium_map_html):
-        if G_current and calculate_route_and_show_map and not folium_map_html and \
-           "Não foi possível encontrar uma rota" not in caminho_curto_text and \
-           "Erro ao processar dados para" not in caminho_curto_text and \
-           "Origem e destino são o mesmo" not in caminho_curto_text:
-            caminho_curto_text = f"Rota para {actual_selected_origem} a {actual_selected_destino} calculada, mas houve um erro ao gerar o mapa visual."
-        if not folium_map_html: folium_map_html = None
+                    route_coords = []
+                    for u, v in zip(full_route_nodes[:-1], full_route_nodes[1:]):
+                        edge_data = G_current.get_edge_data(u, v, 0)
+                        if 'geometry' in edge_data:
+                            xs, ys = edge_data['geometry'].xy
+                            route_coords.extend(list(zip(ys, xs)))
+                        else:
+                            route_coords.extend([(G_current.nodes[u]['y'], G_current.nodes[u]['x']), (G_current.nodes[v]['y'], G_current.nodes[v]['x'])])
+                    
+                    if route_coords:
+                        folium.PolyLine(locations=route_coords, color="#0000FF", weight=5, opacity=0.8, tooltip=f"Rota: {custo_caminho}").add_to(m)
 
-    # Preparação do contexto para renderização do template HTML
+                    m.fit_bounds(m.get_bounds(), padding=(30, 30))
+                    folium_map_html = m._repr_html_()
+
+            except Exception as e:
+                caminho_curto_text = f"Ocorreu um erro: {e}"
+                traceback.print_exc()
+
     context = {
+        'pontos_disponiveis': pontos_disponiveis,
+        'selected_origem': request.session.get('calc_origem', ""),
+        'selected_destinos_finais': request.session.get('calc_destinos', []),
         'caminho': caminho_curto_text,
         'custo': custo_caminho,
-        'pontos_disponiveis': pontos_disponiveis,
-        'selected_origem': template_selected_origem, 
-        'selected_destino': template_selected_destino,
-        'selected_traffic_condition': template_selected_traffic,
         'folium_map_html': folium_map_html,
-        'DIAGNOSTIC_MODE': (ROUTING_WEIGHT_FOR_DIAGNOSIS != "travel_time"),
-        'current_weight': ROUTING_WEIGHT_FOR_DIAGNOSIS,
-        'show_map_section': calculate_route_and_show_map and bool(folium_map_html)
+        'show_map_section': show_map_section, 
+        'trigger_route_calculation': route_calculation_was_performed,
+        'display_info_about_random_route': request.session.get('calc_route_type') == 'random',
     }
+    
     return render(request, 'grafo_app/index.html', context)
